@@ -2,7 +2,16 @@ module ginger
 
 go 1.12
 
-require github.com/gin-gonic/gin v1.4.0
+require (
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
+	github.com/didi/gendry v1.3.1
+	github.com/garyburd/redigo v1.6.0
+	github.com/gin-gonic/gin v1.4.0
+	github.com/go-sql-driver/mysql v1.4.1
+	google.golang.org/appengine v0.0.0-00010101000000-000000000000 // indirect
+	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
+	gopkg.in/yaml.v2 v2.2.2
+)
 
 replace golang.org/x/text => github.com/golang/text v0.3.2
 

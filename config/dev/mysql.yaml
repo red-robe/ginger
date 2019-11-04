@@ -1,0 +1,16 @@
+mysql:
+  dbHost: localhost   #主机地址
+  dbPort: 3306        #端口
+  dbUser: dbuser      #数据库用户名
+  dbPasswd: 123456    #用户密码
+  dbName: dbdemo      #数据库名
+  connMaxLifetime: 60 #每个连接最长生命周期，单位秒
+  maxIdleConns: 100   #连接池最大闲置连接数
+  maxOpenConns: 200   #连接池最大连接数
+  charset: utf8       #传输字符编码
+  allowCleartextPasswords: TRUE #开发环境中设置允许明文密码通信
+  interpolateParams: TRUE #设置允许占位符参数
+  timeout: 5            #连接请求的超时时间，单位秒
+  readTimeout: 5        #读超时时间，单位秒
+  parseTime: TRUE       #将数据库的datetime时间格式转换为go time包数据类型
+  pING: TRUE            #连接时PING测试
