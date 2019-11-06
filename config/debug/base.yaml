@@ -1,4 +1,4 @@
 base:
   appName: gingerAppDemo
   version: v0.1
-  env: dev
+  env: debug

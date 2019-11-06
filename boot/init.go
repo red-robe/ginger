@@ -1,11 +1,11 @@
-package init
+package boot
 
 import (
 	"ginger/config"
 	"ginger/dao/mongodb"
 	"ginger/dao/mysql"
 	"ginger/dao/redis"
-	"ginger/util"
+	"ginger/util/jwt"
 )
 
 // 系统启动时的运行各种初始化
@@ -19,5 +19,5 @@ func Init()  {
 	// 初始化mongodb连接池
 	mongodb.Init()
 	// jwt初始化
-	util.JwtInit()
+	jwt.JwtInit()
 }

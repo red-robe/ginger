@@ -1,15 +1,15 @@
-package ginger
+package main
 
 import (
 	"ginger/common"
-	"ginger/init"
+	"ginger/boot"
 	"ginger/router"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	// 系统模块初始化
-	init.Init()
+	boot.Init()
 
 	// 创建一个gin实例
 	engine := gin.New()
@@ -22,8 +22,9 @@ func main() {
 	router.Router(engine)
 
 	// 设置页面模板路径
-	engine.LoadHTMLGlob("view/*")
+	engine.LoadHTMLGlob("views/*")
 
 	err := engine.Run(":8090")
 	common.Ef("engine.Run",err)
+
 }

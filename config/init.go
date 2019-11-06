@@ -2,9 +2,9 @@ package config
 
 import (
 	"ginger/common"
+	"github.com/gin-gonic/gin"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
-	"os"
 )
 
 type Base struct {
@@ -57,9 +57,10 @@ var (
 )
 
 func Init() {
-	// 先从环境变量获取环境的信息 (dev|prod|test)
+	// 先从环境变量获取环境的信息 (debug|release|test)
+	// export GIN_MODE=release
 	var currentEnv string
-	currentEnv = os.Getenv(common.EnvVariableName)
+	currentEnv = gin.Mode()
 	if currentEnv == "" {
 		currentEnv = common.DefaultProjectEnv
 	}

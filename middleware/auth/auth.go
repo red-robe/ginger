@@ -2,7 +2,7 @@ package auth
 
 import (
 	"ginger/cache"
-	"ginger/util"
+	"ginger/util/jwt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -25,7 +25,7 @@ func AuthMiddleware() gin.HandlerFunc {
 		}
 
 		// 解码校验token是否合法
-		customerClaim, err := util.JwtService.Decode(tkStr)
+		customerClaim, err := jwt.JwtService.Decode(tkStr)
 		if err != nil {
 			c.Abort()
 			c.JSON(http.StatusUnauthorized, gin.H{
