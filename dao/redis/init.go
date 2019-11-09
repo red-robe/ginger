@@ -1,9 +1,9 @@
 package redis
 
 import (
-	"fmt"
 	"ginger/common"
 	"ginger/config"
+	"ginger/util/logger"
 	"github.com/garyburd/redigo/redis"
 	"strconv"
 	"time"
@@ -28,12 +28,13 @@ func Init() {
 			redisAddr := config.RedisConf.DbHost + ":" + strconv.Itoa(int(config.RedisConf.DbPort))
 			conn, err := redis.Dial("tcp", redisAddr)
 			if err != nil {
-				common.Eh("redis.Dail", err)
+				common.Ec(err)
 				return nil, err
 			}
 			// 权限认证
 			if config.RedisConf.DbAuth {
 				if _, err := conn.Do("Auth", config.RedisConf.DbPasswd); err != nil {
+					common.Ec(err)
 					conn.Close()
 					return nil, err
 				}
@@ -46,13 +47,16 @@ func Init() {
 				return nil
 			}
 			_, err := conn.Do("Ping")
+			if err != nil {
+				logger.WarmLog(err)
+			}
 			return err
 		},
 	}
 
 	// 一般启动后不关闭连接池
 	// defer poolPtr.Close()
-	fmt.Println("Redis Pool Ready!")
+	logger.InfoLog("dao/redis.Init","Redis Pool Ready!")
 }
 
 // 从Redis连接池获取一个连接

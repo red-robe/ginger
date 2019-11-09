@@ -1,8 +1,7 @@
-redis:
-  dbHost: localhost #redis主机
-  dbPort: 6379      #端口号
-  dbAuth: FALSE     #是否开启鉴权
-  dbPasswd: 123456  #鉴权密码
-  maxActive: 0      #最大活动链接数。0为无限
-  maxIdle: 50       #最大闲置链接数，0为无限
-  idleTimeout: 60   #闲置链接超时时间
+dbHost: localhost #redis主机
+dbPort: 6379      #端口号
+dbAuth: FALSE     #是否开启鉴权
+dbPasswd: 123456  #鉴权密码
+maxActive: 0      #最大活动链接数。0为无限
+maxIdle: 50       #最大闲置链接数，0为无限
+idleTimeout: 60   #闲置链接超时时间

@@ -6,8 +6,8 @@ import (
 	"ginger/cache"
 	"ginger/common"
 	"ginger/model"
-	"ginger/util"
 	"ginger/util/jwt"
+	"ginger/util/logger"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -35,16 +35,18 @@ func SignUp(c *gin.Context) {
 		form := new(SignUpForm)
 		// _ = c.Bind(form) //MustBindWith()
 		if err := c.ShouldBind(form); err != nil {
-			util.ResponseInvalidParam(c,err)
+			common.ResponseInvalidParam(c,err)
 			return
 		}
 
 		// 密码哈希计算
-		passHash, salt := util.GenPassHash(form.Password)
+		passHash, salt := common.GenPassHash(form.Password)
 		// 创建用户
 		id := model.CreateUserByEmail(form.Name, form.Email, passHash, salt)
 		if id == -1 {
-			util.ResponseServerError(c,errors.New("register error,please try again"))
+			err := errors.New("register error,please try again")
+			logger.WarmLog(err)
+			common.ResponseServerError(c,err)
 			return
 		}
 
@@ -55,17 +57,17 @@ func SignUp(c *gin.Context) {
 			Email: form.Email,
 		}
 		tkStr, err := jwt.JwtService.Encode(userClaim)
-		common.Eh("tk.Encode", err)
+		common.Eh(err)
 
 		// Redis存储token保存登录状态
 		userKey := "user_token_" + strconv.Itoa(int(id))
 		cache.SetToken(userKey, tkStr)
 
-		util.ResponseOk(c,gin.H{"token": tkStr})
+		common.ResponseOk(c,gin.H{"token": tkStr})
 		return
 
 	} else {
-		util.ResponseMethodNotAllowed(c,errors.New("only allow GET Or POST method"))
+		common.ResponseMethodNotAllowed(c,errors.New("only allow GET Or POST method"))
 		return
 	}
 }
@@ -88,7 +90,7 @@ func SignIn(c *gin.Context) {
 		// 请求登录参数验证
 		form := new(SignInForm)
 		if err := c.ShouldBind(form); err != nil {
-			util.ResponseInvalidParam(c,err)
+			common.ResponseInvalidParam(c,err)
 			return
 		}
 
@@ -96,9 +98,9 @@ func SignIn(c *gin.Context) {
 		// 1.根据邮箱获取哈希密码与盐值
 		userInfo := model.GetUserInfoByEmail(form.Email)
 		// 2.将用户密码与盐值哈希计算并与数据库密码进行比较
-		b := util.IsValidPasswd(form.PassWord, userInfo.Salt, userInfo.Password)
+		b := common.IsValidPasswd(form.PassWord, userInfo.Salt, userInfo.Password)
 		if !b {
-			util.CommonResponse(c,util.ResponseCodeUnAuthorized,http.StatusForbidden,nil,errors.New("email Or password error,please try again"))
+			common.CommonResponse(c, common.ResponseCodeUnAuthorized,http.StatusForbidden,nil,errors.New("email Or password error,please try again"))
 			return
 		}
 
@@ -111,18 +113,18 @@ func SignIn(c *gin.Context) {
 		}
 
 		tkStr, err := jwt.JwtService.Encode(userClaim)
-		common.Eh("tk.Encode", err)
+		common.Eh(err)
 
 		// Redis存储token保存登录状态
 		userKey := "user_token_" + strconv.Itoa(int(userInfo.ID))
 		cache.SetToken(userKey, tkStr)
 
 
-		util.ResponseOk(c,gin.H{"token": tkStr})
+		common.ResponseOk(c,gin.H{"token": tkStr})
 		return
 
 	} else {
-		util.ResponseMethodNotAllowed(c,errors.New("only allow GET Or POST method"))
+		common.ResponseMethodNotAllowed(c,errors.New("only allow GET Or POST method"))
 		return
 	}
 }
@@ -139,7 +141,7 @@ func SignOut(c *gin.Context) {
 	// 解码获取id
 	claim, err := jwt.JwtService.Decode(tkStr)
 	if err != nil {
-		util.ResponseUnAuthorized(c,err)
+		common.ResponseUnAuthorized(c,err)
 		return
 	}
 
@@ -147,8 +149,8 @@ func SignOut(c *gin.Context) {
 	delCount := cache.DeleteToken(key)
 
 	if delCount > 0 {
-		util.ResponseOk(c,gin.H{"message": "Sign Out Successful!",})
+		common.ResponseOk(c,gin.H{"message": "Sign Out Successful!",})
 	} else {
-		util.ResponseServerError(c,errors.New("sign out error"))
+		common.ResponseServerError(c,errors.New("sign out error"))
 	}
 }

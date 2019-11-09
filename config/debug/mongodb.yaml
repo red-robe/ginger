@@ -1,6 +1,6 @@
-mongodb:
-  dbHost: localhost
-  dbPort: 27017
-  dbUser: dbuser
-  dbPasswd: 123456
-  dbName: dbname
+
+dbHost: localhost
+dbPort: 27017
+dbUser: dbuser
+dbPasswd: 123456
+dbName: dbname

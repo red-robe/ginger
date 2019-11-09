@@ -1,37 +1,57 @@
 package common
 
-import "log"
+import (
+	"ginger/util/logger"
+	"runtime"
+	"strconv"
+)
 
 // handler的错误处理函数：日志记录错误信息
-func Eh(where string, err error) bool {
+func Eh(err error) bool {
 	if err != nil {
-		log.Println("[Handler Error]:On ->", where, "  [Error Content] ->", err.Error())
+		var path = "handler"
+		if _, file, line, ok := runtime.Caller(1);ok {
+			path = file + "" + strconv.Itoa(line)
+		}
+		logger.ErrorLog("Eh",path,err)
 		return false
 	}
 	return true
 }
 
-// 模型层的错误处理函数：日志记录错误
-func Em(where string, err error) bool {
+// model层的错误处理函数：日志记录错误信息
+func Em(err error) bool {
 	if err != nil {
-		log.Println("[Model Error]:On ->", where, "  [Error Content] ->", err.Error())
+		var path = "model"
+		if _, file, line, ok := runtime.Caller(1);ok {
+			path = file + "" + strconv.Itoa(line)
+		}
+		logger.ErrorLog("Em",path,err)
 		return false
 	}
 	return true
 }
 
 // 通用的错误处理日志记录
-func Ec(where string, err error) bool {
+func Ec(err error) bool {
 	if err != nil {
-		log.Fatal("[Common Error]:On ->", where, "  [Error Content] ->", err.Error())
+		var path = "undefine"
+		if _, file, line, ok := runtime.Caller(1);ok {
+			path = file + "" + strconv.Itoa(line)
+		}
+		logger.ErrorLog("Ec",path,err)
 		return false
 	}
 	return true
 }
 
 // 退出程序的错误处理
-func Ef(where string, err error) {
+func Ef(err error) {
 	if err != nil {
-		log.Fatal("[Fatal]:On ->", where, "  [Error Content] ->", err.Error())
+		var path = "undefine"
+		if _, file, line, ok := runtime.Caller(1);ok {
+			path = file + "" + strconv.Itoa(line)
+		}
+		logger.FailLog(path, err)
 	}
 }

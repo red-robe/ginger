@@ -6,8 +6,11 @@ require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/didi/gendry v1.3.1
 	github.com/garyburd/redigo v1.6.0
+	github.com/gin-contrib/zap v0.0.0-20190911144541-f473495929db
 	github.com/gin-gonic/gin v1.4.0
 	github.com/go-sql-driver/mysql v1.4.1
+	go.uber.org/zap v1.10.0
+	golang.org/x/sys v0.0.0-20190422165155-953cdadca894 // indirect
 	google.golang.org/appengine v0.0.0-00010101000000-000000000000 // indirect
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
 	gopkg.in/yaml.v2 v2.2.2
@@ -48,3 +51,13 @@ replace golang.org/x/mobile => github.com/golang/mobile v0.0.0-20191031020345-09
 replace golang.org/x/image => github.com/golang/image v0.0.0-20191009234506-e7c1f5e7dbb8
 
 replace golang.org/x/xerrors => github.com/golang/xerrors v0.0.0-20191011141410-1b5146add898
+
+replace golang.org/x/mod => github.com/golang/mod v0.1.0
+
+replace go.uber.org/zap => github.com/uber-go/zap v1.12.0
+
+replace go.uber.org/atomic => github.com/uber-go/atomic v1.5.0
+
+replace go.uber.org/multierr => github.com/uber-go/multierr v1.4.0
+
+replace go.uber.org/tools => github.com/uber-go/tools v0.0.0-20190618225709-2cfd321de3ee

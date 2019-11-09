@@ -6,12 +6,15 @@ import (
 	"ginger/dao/mysql"
 	"ginger/dao/redis"
 	"ginger/util/jwt"
+	"ginger/util/logger"
 )
 
 // 系统启动时的运行各种初始化
 func Init()  {
 	// 初始化配置参数
 	config.Init()
+	// 初始化zap日志
+	logger.Init()
 	// 初始化Mysql连接池
 	mysql.Init()
 	// 初始化Redis连接池

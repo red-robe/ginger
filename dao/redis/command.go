@@ -11,7 +11,6 @@ func R(command string, args ...interface{}) (reply interface{}, err error) {
 	for _, i := range args {
 		params = append(params, i)
 	}
-
 	return conn.Do(command, params...)
 
 }

@@ -11,6 +11,7 @@ type Base struct {
 	AppName string `yaml:"appName"`
 	Version string `yaml:"version"`
 	Env     string `yaml:"env"`
+	ListenPort int64 `yaml:"listen"`
 }
 
 type Mysql struct {
@@ -62,28 +63,30 @@ func Init() {
 	var currentEnv string
 	currentEnv = gin.Mode()
 	if currentEnv == "" {
-		currentEnv = common.DefaultProjectEnv
+		currentEnv = common.DefaultEnv
 	}
+
 
 	confPath := "./config/" + currentEnv + "/"
 
 	baseConfFile, err := ioutil.ReadFile(confPath + "/base.yaml")
-	common.Ef("ioutil.ReadFile base.yaml", err)
+	common.Ef(err)
 	err = yaml.Unmarshal(baseConfFile, &BaseConf)
-	common.Ef("yaml.Unmarshal(baseConfFile, &baseConf)", err)
+	common.Ef(err)
 
 	mysqlConfFile, err := ioutil.ReadFile(confPath + "/mysql.yaml")
-	common.Ef("ioutil.ReadFile mysql.yaml", err)
+	common.Ef(err)
 	err = yaml.Unmarshal(mysqlConfFile, &MysqlConf)
-	common.Ef("yaml.Unmarshal(mysqlConfFile, &mysqlConfig)", err)
+	common.Ef(err)
 
 	RedisConfFile, err := ioutil.ReadFile(confPath + "/redis.yaml")
-	common.Ef("ioutil.ReadFile redis.yaml", err)
+	common.Ef(err)
 	err = yaml.Unmarshal(RedisConfFile, &RedisConf)
-	common.Ef("yaml.Unmarshal(RedisConfFile, &RedisConf)", err)
+	common.Ef(err)
 
 	MongoConfFile, err := ioutil.ReadFile(confPath + "/mongodb.yaml")
-	common.Ef("ioutil.ReadFile mongodb.yaml", err)
+	common.Ef(err)
 	err = yaml.Unmarshal(MongoConfFile, &MongoConf)
-	common.Ef("yaml.Unmarshal(MongoConfFile, &MongoConf)", err)
+	common.Ef(err)
+
 }

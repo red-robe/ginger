@@ -12,7 +12,7 @@ func Router(r *gin.Engine) {
 	r.GET("/", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.tmpl", gin.H{
 			"title": "Ginger - A Useful Gin Scaffold",
-			"content":"Wish you a pleasant use!!!",
+			"content":"Ginger - A Useful Gin Scaffold.\n Wish you a pleasant use!!!",
 		})
 	})
 

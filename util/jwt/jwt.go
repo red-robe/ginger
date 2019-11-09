@@ -2,7 +2,8 @@ package jwt
 
 import (
 	"ginger/common"
-	"fmt"
+	"ginger/util/logger"
+	"go.uber.org/zap"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -10,6 +11,8 @@ import (
 
 func JwtInit()  {
 	JwtService = new(TokenService)
+	logger.InfoLog("util/jwt.JwtInit","jwt ready!")
+
 }
 
 type ITokenService interface {
@@ -44,7 +47,6 @@ func (tks *TokenService) Encode(user TokenUserClaim) (string, error) {
 	// 设置超时时间
 	expTime := time.Now().Add(time.Hour * 24 * 3).Unix()
 
-	// fmt.Println("jwt编码的数据user：", user)
 	// 设置Claim
 	customer := CustomerClaim{user, &jwt.StandardClaims{ExpiresAt: expTime}}
 
@@ -63,7 +65,11 @@ func (tks *TokenService) Decode(tokenString string) (*CustomerClaim, error) {
 	})
 
 	if err != nil {
-		fmt.Println("token解码出错:", err.Error(), "接收到的token为:", tokenString)
+		logger.ZapLog.Warn("JWT Decode Wrong",
+			zap.String("path", "util/jwt.TokenService.Decode"),
+			zap.String("warming", err.Error()),
+			zap.String("receive_token", tokenString),
+		)
 		return nil, err
 	}
 
