@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <meta charset="UTF-8">
+    <title>Ginger App {{.error_title}}</title>
+    <style>
+        html,body {
+            margin: 0;
+            padding: 0;
+            width:100%;
+            height:100%;
+            overflow: hidden;
+            background: #fff;
+        }
+
+        .playerBox {
+            width: 90vw;		/* 宽度  页面宽度的90% */
+            /*height: 60vh;		!* 高度  页面高度的60% *!*/
+
+            /* 容器自动水平居中 */
+            margin: 0px auto;
+
+            /* 实现垂直居中 距顶部高度  也可以写成 calc((100vh - 60vh)/2) */
+            margin-top: 20vh;
+
+            text-align: center;	/* 文字水平居中 */
+            background: #fff;
+        }
+
+        .error_title h2 {
+            color: black;
+            font-size: 6vh;
+        }
+        .error_title h3 {
+            color: gray;
+            font-size: 5vh;
+        }
+        .error_content {
+            color: darkgray;
+            font-size: 3vh;
+        }
+    </style>
+</head>
+<body>
+<div class="playerBox">
+    <div class="error_images">
+        <img src="asset/images/gopher.gif" name="gif">
+    </div>
+    <div class="error_title">
+        <h2>{{.error_code}}</h2>
+        <h3>{{.error_title}}</h3>
+    </div>
+    <p class="error_content">{{.error_content}}</p>
+</div>
+</body>
+</html>

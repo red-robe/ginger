@@ -2,7 +2,6 @@ package boot
 
 import (
 	"ginger/config"
-	"ginger/dao/mongodb"
 	"ginger/dao/mysql"
 	"ginger/dao/redis"
 	"ginger/util/jwt"
@@ -20,7 +19,7 @@ func Init()  {
 	// 初始化Redis连接池
 	redis.Init()
 	// 初始化mongodb连接池
-	mongodb.Init()
+	// mongodb.Init()
 	// jwt初始化
 	jwt.JwtInit()
 }
