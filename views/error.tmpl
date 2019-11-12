@@ -2,7 +2,7 @@
 <html lang="cn">
 <head>
     <meta charset="UTF-8">
-    <title>Ginger App {{.error_title}}</title>
+    <title>Ginger App {{.error_code}} {{.error_title}}</title>
     <style>
         html,body {
             margin: 0;
@@ -15,7 +15,6 @@
 
         .playerBox {
             width: 90vw;		/* 宽度  页面宽度的90% */
-            /*height: 60vh;		!* 高度  页面高度的60% *!*/
 
             /* 容器自动水平居中 */
             margin: 0px auto;
@@ -25,17 +24,29 @@
 
             text-align: center;	/* 文字水平居中 */
             background: #fff;
+
+            /* flex */
+            display: flex;
+            flex-flow: row;
+            justify-content: center;
         }
 
-        .error_title h2 {
-            color: black;
-            font-size: 6vh;
+        .error_images {}
+        .error_content {
+            margin-top: 5vh;
+            margin-left: 10vh;
+            padding-left: 10vh;
+            border-left: solid 1px gray;
         }
-        .error_title h3 {
-            color: gray;
+        .error_content h2 {
+            color: black;
             font-size: 5vh;
         }
-        .error_content {
+        .error_content h3 {
+            color: gray;
+            font-size: 4vh;
+        }
+        .error_content p{
             color: darkgray;
             font-size: 3vh;
         }
@@ -44,13 +55,14 @@
 <body>
 <div class="playerBox">
     <div class="error_images">
-        <img src="asset/images/gopher.gif" name="gif">
+        <img src="/asset/images/gopher.gif" name="gif">
     </div>
-    <div class="error_title">
+    <div class="error_content">
         <h2>{{.error_code}}</h2>
         <h3>{{.error_title}}</h3>
+        <p>{{.error_content}}</p>
     </div>
-    <p class="error_content">{{.error_content}}</p>
+
 </div>
 </body>
 </html>
