@@ -1,8 +1,8 @@
 package mongodb
 
 import (
-	"ginger/common"
-	"ginger/util/logger"
+	"github.com/gofuncchan/ginger/common"
+	"github.com/gofuncchan/ginger/util/logger"
 	"gopkg.in/mgo.v2"
 	// "gopkg.in/mgo.v2/bson"
 )

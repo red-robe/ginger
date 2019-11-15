@@ -3,7 +3,7 @@ package user_builder
 import (
 	"context"
 	"errors"
-	"ginger/dao/mysql"
+	"github.com/gofuncchan/ginger/dao/mysql"
 	"github.com/didi/gendry/builder"
 	"github.com/didi/gendry/scanner"
 	"time"
@@ -36,8 +36,7 @@ const (
 
 // GetOne gets one record from table user by condition "where"
 func GetOne(where map[string]interface{}) (*User, error){
-	var db = mysql.Db
-	if nil == db {
+	if nil == mysql.Db {
 		return nil, errors.New("sql.DB object couldn't be nil")
 	}
 	cond, vals, err := builder.BuildSelect(TableName, where, nil)
@@ -45,7 +44,7 @@ func GetOne(where map[string]interface{}) (*User, error){
 		return nil, err
 	}
 
-	row, err := db.Query(cond, vals...)
+	row, err := mysql.Db.Query(cond, vals...)
 	if nil != err || nil == row {
 		return nil, err
 	}
@@ -57,15 +56,14 @@ func GetOne(where map[string]interface{}) (*User, error){
 
 // GetMulti gets multiple records from table user by condition "where"
 func GetMulti(where map[string]interface{}) ([]*User, error) {
-	var db = mysql.Db
-	if nil == db {
+	if nil == mysql.Db {
 		return nil, errors.New("sql.DB object couldn't be nil")
 	}
 	cond, vals, err := builder.BuildSelect(TableName, where, nil)
 	if nil != err {
 		return nil, err
 	}
-	row, err := db.Query(cond, vals...)
+	row, err := mysql.Db.Query(cond, vals...)
 	if nil != err || nil == row {
 		return nil, err
 	}
@@ -77,15 +75,14 @@ func GetMulti(where map[string]interface{}) ([]*User, error) {
 
 // Insert inserts an array of data into table user
 func Insert(data []map[string]interface{}) (int64, error) {
-	var db = mysql.Db
-	if nil == db {
+	if nil == mysql.Db {
 		return 0, errors.New("sql.DB object couldn't be nil")
 	}
 	cond, vals, err := builder.BuildInsert(TableName, data)
 	if nil != err {
 		return 0, err
 	}
-	result, err := db.Exec(cond, vals...)
+	result, err := mysql.Db.Exec(cond, vals...)
 	if nil != err || nil == result {
 		return 0, err
 	}
@@ -94,15 +91,14 @@ func Insert(data []map[string]interface{}) (int64, error) {
 
 // Update updates the table user
 func Update(where, data map[string]interface{}) (int64, error) {
-	var db = mysql.Db
-	if nil == db {
+	if nil == mysql.Db {
 		return 0, errors.New("sql.DB object couldn't be nil")
 	}
 	cond, vals, err := builder.BuildUpdate(TableName, where, data)
 	if nil != err {
 		return 0, err
 	}
-	result, err := db.Exec(cond, vals...)
+	result, err := mysql.Db.Exec(cond, vals...)
 	if nil != err {
 		return 0, err
 	}
@@ -111,15 +107,14 @@ func Update(where, data map[string]interface{}) (int64, error) {
 
 // Delete deletes matched records in user
 func Delete(where, data map[string]interface{}) (int64, error) {
-	var db = mysql.Db
-	if nil == db {
+	if nil == mysql.Db {
 		return 0, errors.New("sql.DB object couldn't be nil")
 	}
 	cond, vals, err := builder.BuildDelete(TableName, where)
 	if nil != err {
 		return 0, err
 	}
-	result, err := db.Exec(cond, vals...)
+	result, err := mysql.Db.Exec(cond, vals...)
 	if nil != err {
 		return 0, err
 	}
@@ -128,11 +123,10 @@ func Delete(where, data map[string]interface{}) (int64, error) {
 
 // GetCount
 func GetCount(where map[string]interface{}) (int64, error) {
-	var db = mysql.Db
-	if nil == db {
+	if nil == mysql.Db {
 		return 0, errors.New("sql.DB object couldn't be nil")
 	}
-	res, err := builder.AggregateQuery(context.TODO(), db, TableName, where, builder.AggregateCount("*"))
+	res, err := builder.AggregateQuery(context.TODO(), mysql.Db, TableName, where, builder.AggregateCount("*"))
 	if nil != err {
 		return 0, err
 	}

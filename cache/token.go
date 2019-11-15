@@ -2,7 +2,7 @@ package cache
 
 import (
 	"fmt"
-	"ginger/dao/redis"
+	"github.com/gofuncchan/ginger/dao/redis"
 	redigo "github.com/garyburd/redigo/redis"
 )
 

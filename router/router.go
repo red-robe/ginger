@@ -1,8 +1,8 @@
 package router
 
 import (
-	"ginger/handlers"
-	"ginger/middleware/auth"
+	"github.com/gofuncchan/ginger/handlers"
+	"github.com/gofuncchan/ginger/middleware/auth"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )

@@ -1,9 +1,9 @@
 package redis
 
 import (
-	"ginger/common"
-	"ginger/config"
-	"ginger/util/logger"
+	"github.com/gofuncchan/ginger/common"
+	"github.com/gofuncchan/ginger/config"
+	"github.com/gofuncchan/ginger/util/logger"
 	"github.com/garyburd/redigo/redis"
 	"strconv"
 	"time"

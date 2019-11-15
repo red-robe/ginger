@@ -1,8 +1,8 @@
 package auth
 
 import (
-	"ginger/cache"
-	"ginger/util/jwt"
+	"github.com/gofuncchan/ginger/cache"
+	"github.com/gofuncchan/ginger/util/jwt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"

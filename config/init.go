@@ -1,7 +1,7 @@
 package config
 
 import (
-	"ginger/common"
+	"github.com/gofuncchan/ginger/common"
 	"github.com/gin-gonic/gin"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"

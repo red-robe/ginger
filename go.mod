@@ -1,4 +1,4 @@
-module ginger
+module github.com/gofuncchan/ginger
 
 go 1.12
 
@@ -6,7 +6,6 @@ require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/didi/gendry v1.3.1
 	github.com/garyburd/redigo v1.6.0
-	github.com/gin-contrib/zap v0.0.0-20190911144541-f473495929db
 	github.com/gin-gonic/gin v1.4.0
 	github.com/go-sql-driver/mysql v1.4.1
 	go.uber.org/zap v1.10.0
@@ -15,6 +14,8 @@ require (
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
 	gopkg.in/yaml.v2 v2.2.2
 )
+
+replace github.com/gofuncchan/ginger => /Users/fun/Code/go/src/github.com/gofuncchan/ginger
 
 replace golang.org/x/text => github.com/golang/text v0.3.2
 

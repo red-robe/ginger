@@ -1,7 +1,7 @@
 package mongodb
 
 import (
-	"ginger/config"
+	"github.com/gofuncchan/ginger/config"
 	"gopkg.in/mgo.v2"
 )
 

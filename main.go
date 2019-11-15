@@ -1,14 +1,14 @@
 package main
 
 import (
-	"ginger/boot"
-	"ginger/common"
-	"ginger/config"
-	ginger_zap_logger "ginger/middleware/logger"
-	ginger_zap_recovery "ginger/middleware/recovery"
-	"ginger/router"
-	"ginger/util/logger"
 	"github.com/gin-gonic/gin"
+	"github.com/gofuncchan/ginger/boot"
+	"github.com/gofuncchan/ginger/common"
+	"github.com/gofuncchan/ginger/config"
+	ginger_zap_logger "github.com/gofuncchan/ginger/middleware/logger"
+	ginger_zap_recovery "github.com/gofuncchan/ginger/middleware/recovery"
+	"github.com/gofuncchan/ginger/router"
+	"github.com/gofuncchan/ginger/util/logger"
 	"strconv"
 )
 

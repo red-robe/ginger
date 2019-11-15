@@ -1,8 +1,8 @@
 package model
 
 import (
-	"ginger/common"
-	builder "ginger/dao/mysql/user_builder"
+	"github.com/gofuncchan/ginger/common"
+	builder "github.com/gofuncchan/ginger/dao/mysql/user_builder"
 	"time"
 )
 

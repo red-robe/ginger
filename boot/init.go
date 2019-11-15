@@ -1,11 +1,11 @@
 package boot
 
 import (
-	"ginger/config"
-	"ginger/dao/mysql"
-	"ginger/dao/redis"
-	"ginger/util/jwt"
-	"ginger/util/logger"
+	"github.com/gofuncchan/ginger/config"
+	"github.com/gofuncchan/ginger/dao/mysql"
+	"github.com/gofuncchan/ginger/dao/redis"
+	"github.com/gofuncchan/ginger/util/jwt"
+	"github.com/gofuncchan/ginger/util/logger"
 )
 
 // 系统启动时的运行各种初始化

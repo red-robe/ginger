@@ -1,8 +1,8 @@
 package jwt
 
 import (
-	"ginger/common"
-	"ginger/util/logger"
+	"github.com/gofuncchan/ginger/common"
+	"github.com/gofuncchan/ginger/util/logger"
 	"go.uber.org/zap"
 	"time"
 

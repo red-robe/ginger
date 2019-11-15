@@ -1,7 +1,7 @@
 package common
 
 import (
-	"ginger/util/logger"
+	"github.com/gofuncchan/ginger/util/logger"
 	"runtime"
 	"strconv"
 )
