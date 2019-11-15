@@ -13,6 +13,8 @@ import (
 )
 
 func main() {
+	var err error
+
 	// 系统模块初始化
 	boot.Init()
 
@@ -33,7 +35,7 @@ func main() {
 	// 设置页面模板路径
 	engine.LoadHTMLGlob("views/*")
 
-	err := engine.Run(":" + strconv.Itoa(int(config.BaseConf.ListenPort)))
+	err = engine.Run(":" + strconv.Itoa(int(config.BaseConf.ListenPort)))
 	common.Ef(err)
 
 

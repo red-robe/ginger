@@ -2,7 +2,6 @@ package config
 
 import (
 	"github.com/gofuncchan/ginger/common"
-	"github.com/gin-gonic/gin"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 )
@@ -57,18 +56,7 @@ var (
 	MongoConf Mongodb
 )
 
-func Init() {
-	// 先从环境变量获取环境的信息 (debug|release|test)
-	// export GIN_MODE=release
-	var currentEnv string
-	currentEnv = gin.Mode()
-	if currentEnv == "" {
-		currentEnv = common.DefaultEnv
-	}
-
-
-	confPath := "./config/" + currentEnv + "/"
-
+func Init(confPath string) {
 	baseConfFile, err := ioutil.ReadFile(confPath + "/base.yaml")
 	common.Ef(err)
 	err = yaml.Unmarshal(baseConfFile, &BaseConf)
