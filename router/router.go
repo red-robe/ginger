@@ -1,7 +1,7 @@
 package router
 
 import (
-	"github.com/gofuncchan/ginger/handlers"
+	"github.com/gofuncchan/ginger/handler"
 	"github.com/gofuncchan/ginger/middleware/auth"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -32,14 +32,14 @@ func Router(r *gin.Engine) {
 
 	// 非鉴权相关
 	// 注册
-	r.GET("/signup", handlers.SignUp)
-	r.POST("/signup", handlers.SignUp)
+	r.GET("/signup", handler.SignUp)
+	r.POST("/signup", handler.SignUp)
 
 	// 登录
-	r.GET("/signin", handlers.SignIn)
-	r.POST("/signin", handlers.SignIn)
+	r.GET("/signin", handler.SignIn)
+	r.POST("/signin", handler.SignIn)
 
 	// 退出登录
-	r.GET("/signout", auth.AuthMiddleware(), handlers.SignOut)
+	r.GET("/signout", auth.AuthMiddleware(), handler.SignOut)
 
 }
