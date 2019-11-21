@@ -29,5 +29,3 @@ func M(collection string, f func(*mgo.Collection)) {
 	c := session.DB(config.MongoConf.DbName).C(collection)
 	f(c)
 }
-
-

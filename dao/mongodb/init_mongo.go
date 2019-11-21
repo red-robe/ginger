@@ -13,15 +13,15 @@ mongo连接池实现：
 */
 
 var (
-	session     *mgo.Session
-	err 		error
+	session *mgo.Session
+	err     error
 )
 
 // 包初始化时实例化一个mongo session
 func Init() {
 	// 启动一个Session并关闭返回的副本，只为了初始化
 	Session()
-	logger.InfoLog("dao/mongodb.Init","Mongo Session Clone Ready!")
+	logger.InfoLog("dao/mongodb.Init", "Mongo Session Clone Ready!")
 
 }
 
@@ -34,5 +34,3 @@ func Session() *mgo.Session {
 	}
 	return session.Clone()
 }
-
-

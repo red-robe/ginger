@@ -19,3 +19,6 @@
 
 # go mod
 go.sum
+
+# zap log
+/log

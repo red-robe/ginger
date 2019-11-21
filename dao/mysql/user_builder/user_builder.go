@@ -3,9 +3,9 @@ package user_builder
 import (
 	"context"
 	"errors"
-	"github.com/gofuncchan/ginger/dao/mysql"
 	"github.com/didi/gendry/builder"
 	"github.com/didi/gendry/scanner"
+	"github.com/gofuncchan/ginger/dao/mysql"
 	"time"
 )
 
@@ -35,7 +35,7 @@ const (
 )
 
 // GetOne gets one record from table user by condition "where"
-func GetOne(where map[string]interface{}) (*User, error){
+func GetOne(where map[string]interface{}) (*User, error) {
 	if nil == mysql.Db {
 		return nil, errors.New("sql.DB object couldn't be nil")
 	}

@@ -7,10 +7,10 @@ import (
 )
 
 type Base struct {
-	AppName string `yaml:"appName"`
-	Version string `yaml:"version"`
-	Env     string `yaml:"env"`
-	ListenPort int64 `yaml:"listen"`
+	AppName    string `yaml:"appName"`
+	Version    string `yaml:"version"`
+	Env        string `yaml:"env"`
+	ListenPort int64  `yaml:"listen"`
 }
 
 type Mysql struct {

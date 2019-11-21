@@ -3,12 +3,12 @@ package handler
 import (
 	"errors"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"github.com/gofuncchan/ginger/cache"
 	"github.com/gofuncchan/ginger/common"
 	"github.com/gofuncchan/ginger/model"
 	"github.com/gofuncchan/ginger/util/jwt"
 	"github.com/gofuncchan/ginger/util/logger"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
 )
@@ -35,7 +35,7 @@ func SignUp(c *gin.Context) {
 		form := new(SignUpForm)
 		// _ = c.Bind(form) //MustBindWith()
 		if err := c.ShouldBind(form); err != nil {
-			common.ResponseInvalidParam(c,err)
+			common.ResponseInvalidParam(c, err)
 			return
 		}
 
@@ -46,7 +46,7 @@ func SignUp(c *gin.Context) {
 		if id == -1 {
 			err := errors.New("register error,please try again")
 			logger.WarmLog(err)
-			common.ResponseServerError(c,err)
+			common.ResponseServerError(c, err)
 			return
 		}
 
@@ -63,11 +63,11 @@ func SignUp(c *gin.Context) {
 		userKey := "user_token_" + strconv.Itoa(int(id))
 		cache.SetToken(userKey, tkStr)
 
-		common.ResponseOk(c,gin.H{"token": tkStr})
+		common.ResponseOk(c, gin.H{"token": tkStr})
 		return
 
 	} else {
-		common.ResponseMethodNotAllowed(c,errors.New("only allow GET Or POST method"))
+		common.ResponseMethodNotAllowed(c, errors.New("only allow GET Or POST method"))
 		return
 	}
 }
@@ -90,7 +90,7 @@ func SignIn(c *gin.Context) {
 		// 请求登录参数验证
 		form := new(SignInForm)
 		if err := c.ShouldBind(form); err != nil {
-			common.ResponseInvalidParam(c,err)
+			common.ResponseInvalidParam(c, err)
 			return
 		}
 
@@ -100,7 +100,7 @@ func SignIn(c *gin.Context) {
 		// 2.将用户密码与盐值哈希计算并与数据库密码进行比较
 		b := common.IsValidPasswd(form.PassWord, userInfo.Salt, userInfo.Password)
 		if !b {
-			common.CommonResponse(c, common.ResponseCodeUnAuthorized,http.StatusForbidden,nil,errors.New("email Or password error,please try again"))
+			common.CommonResponse(c, common.ResponseCodeUnAuthorized, http.StatusForbidden, nil, errors.New("email Or password error,please try again"))
 			return
 		}
 
@@ -119,12 +119,11 @@ func SignIn(c *gin.Context) {
 		userKey := "user_token_" + strconv.Itoa(int(userInfo.ID))
 		cache.SetToken(userKey, tkStr)
 
-
-		common.ResponseOk(c,gin.H{"token": tkStr})
+		common.ResponseOk(c, gin.H{"token": tkStr})
 		return
 
 	} else {
-		common.ResponseMethodNotAllowed(c,errors.New("only allow GET Or POST method"))
+		common.ResponseMethodNotAllowed(c, errors.New("only allow GET Or POST method"))
 		return
 	}
 }
@@ -141,7 +140,7 @@ func SignOut(c *gin.Context) {
 	// 解码获取id
 	claim, err := jwt.JwtService.Decode(tkStr)
 	if err != nil {
-		common.ResponseUnAuthorized(c,err)
+		common.ResponseUnAuthorized(c, err)
 		return
 	}
 
@@ -149,8 +148,8 @@ func SignOut(c *gin.Context) {
 	delCount := cache.DeleteToken(key)
 
 	if delCount > 0 {
-		common.ResponseOk(c,gin.H{"message": "Sign Out Successful!",})
+		common.ResponseOk(c, gin.H{"message": "Sign Out Successful!"})
 	} else {
-		common.ResponseServerError(c,errors.New("sign out error"))
+		common.ResponseServerError(c, errors.New("sign out error"))
 	}
 }

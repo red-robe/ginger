@@ -1,10 +1,10 @@
 package redis
 
 import (
+	"github.com/garyburd/redigo/redis"
 	"github.com/gofuncchan/ginger/common"
 	"github.com/gofuncchan/ginger/config"
 	"github.com/gofuncchan/ginger/util/logger"
-	"github.com/garyburd/redigo/redis"
 	"strconv"
 	"time"
 )
@@ -56,7 +56,7 @@ func Init() {
 
 	// 一般启动后不关闭连接池
 	// defer poolPtr.Close()
-	logger.InfoLog("dao/redis.Init","Redis Pool Ready!")
+	logger.InfoLog("dao/redis.Init", "Redis Pool Ready!")
 }
 
 // 从Redis连接池获取一个连接

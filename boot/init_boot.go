@@ -14,7 +14,7 @@ import (
 )
 
 // 系统启动时的运行各种初始化
-func Init()  {
+func Init() {
 	// 从启动参数获取配置文件路径
 	confPath := getConfigPath()
 
@@ -53,7 +53,7 @@ func getConfigPath() string {
 
 	dirs, err := ioutil.ReadDir(confPath)
 	if os.IsNotExist(err) {
-		common.Ef(errors.New("the args confPath `"+ confPath +"` is not exist"))
+		common.Ef(errors.New("the args confPath `" + confPath + "` is not exist"))
 	}
 	if len(dirs) == 0 {
 		common.Ef(errors.New("not any yaml file in this directory"))

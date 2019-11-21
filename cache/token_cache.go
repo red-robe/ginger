@@ -2,8 +2,8 @@ package cache
 
 import (
 	"fmt"
-	"github.com/gofuncchan/ginger/dao/redis"
 	redigo "github.com/garyburd/redigo/redis"
+	"github.com/gofuncchan/ginger/dao/redis"
 )
 
 // 设置Token到redis
