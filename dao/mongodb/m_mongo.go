@@ -6,7 +6,13 @@ import (
 )
 
 /*
-使用示例
+简易mongo操作方法，执行完自动释放mongo连接
+@param collectionName string - Collection name
+@param f func(*mgo.Collection) error - A function which execute mongo curd or other operation
+
+@return error
+
+使用示例：
 	定义一个接收器
 	oneData := make(map[string]interface{})
 
@@ -17,7 +23,7 @@ import (
 		fmt.Println("查询一个结果：", oneData)
 	})
 */
-func M(collection string, f func(*mgo.Collection) error) error {
+func M(collectionName string, f func(*mgo.Collection) error) error {
 	// 申请一个mongodb连接拷贝
 	session := Session()
 	// 使用完即释放连接
@@ -26,6 +32,14 @@ func M(collection string, f func(*mgo.Collection) error) error {
 	}()
 
 	// 返回一个collection连接闭包
-	c := session.DB(config.MongoConf.DbName).C(collection)
+	c := session.DB(config.MongoConf.DbName).C(collectionName)
 	return f(c)
 }
+
+
+
+
+
+
+
+
