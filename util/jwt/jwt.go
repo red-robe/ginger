@@ -1,17 +1,18 @@
 package jwt
 
 import (
-	"github.com/gofuncchan/ginger/common"
-	"github.com/gofuncchan/ginger/util/logger"
+	"fmt"
+	"github.com/gofuncchan/ginger/config"
+	"github.com/gofuncchan/ginger/logger"
 	"go.uber.org/zap"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
 )
 
-func JwtInit()  {
+func JwtInit() {
 	JwtService = new(TokenService)
-	logger.InfoLog("util/jwt.JwtInit","jwt ready!")
+	fmt.Println("JWT service init ready!")
 
 }
 
@@ -21,13 +22,13 @@ type ITokenService interface {
 }
 
 // 编解码私钥，在生产环境中，该私钥请使用生成器生成，并妥善保管，此处使用简单字符串。
-var privateKey = []byte(common.TokenPrivateKey)
+var privateKey = []byte(config.TokenPrivateKey)
 var JwtService *TokenService
 
 // JWT中携带的用户个人信息
 type TokenUserClaim struct {
-	Id int64 `json:id`
-	Name string `json:name`
+	Id    int64  `json:id`
+	Name  string `json:name`
 	Email string `json:email`
 }
 
@@ -38,7 +39,7 @@ type CustomerClaim struct {
 }
 
 // 实现token服务
-type TokenService struct {}
+type TokenService struct{}
 
 // 传入用户信息编码成token
 func (tks *TokenService) Encode(user TokenUserClaim) (string, error) {
@@ -65,7 +66,7 @@ func (tks *TokenService) Decode(tokenString string) (*CustomerClaim, error) {
 	})
 
 	if err != nil {
-		logger.ZapLog.Warn("JWT Decode Wrong",
+		logger.ZapLogger.Error("JWT Decode Wrong",
 			zap.String("path", "util/jwt.TokenService.Decode"),
 			zap.String("warming", err.Error()),
 			zap.String("receive_token", tokenString),
@@ -79,4 +80,3 @@ func (tks *TokenService) Decode(tokenString string) (*CustomerClaim, error) {
 		return nil, err
 	}
 }
-

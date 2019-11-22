@@ -5,10 +5,11 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gofuncchan/ginger/common"
 	"github.com/gofuncchan/ginger/config"
+	"github.com/gofuncchan/ginger/dao/mongodb"
 	"github.com/gofuncchan/ginger/dao/mysql"
 	"github.com/gofuncchan/ginger/dao/redis"
+	"github.com/gofuncchan/ginger/logger"
 	"github.com/gofuncchan/ginger/util/jwt"
-	"github.com/gofuncchan/ginger/util/logger"
 	"io/ioutil"
 	"os"
 )
@@ -20,16 +21,21 @@ func Init() {
 
 	// 初始化配置参数
 	config.Init(confPath)
+
 	// 初始化zap日志
 	logger.Init()
+
+	// jwt初始化
+	jwt.JwtInit()
+
+	// 如开启mongo记录日志，则mongo连接必须初始化
+	// 初始化mongodb连接池
+	mongodb.Init()
 	// 初始化Mysql连接池
 	mysql.Init()
 	// 初始化Redis连接池
 	redis.Init()
-	// 初始化mongodb连接池
-	// mongodb.Init()
-	// jwt初始化
-	jwt.JwtInit()
+
 }
 
 func getConfigPath() string {
@@ -47,16 +53,16 @@ func getConfigPath() string {
 	var currentEnv string
 	currentEnv = gin.Mode()
 	if currentEnv == "" {
-		currentEnv = common.DefaultEnv
+		currentEnv = config.DefaultEnv
 	}
 	confPath := configRootPath + "/" + currentEnv + "/"
 
 	dirs, err := ioutil.ReadDir(confPath)
 	if os.IsNotExist(err) {
-		common.Ef(errors.New("the args confPath `" + confPath + "` is not exist"))
+		common.EF(errors.New("the args confPath `" + confPath + "` is not exist"))
 	}
 	if len(dirs) == 0 {
-		common.Ef(errors.New("not any yaml file in this directory"))
+		common.EF(errors.New("not any yaml file in this directory"))
 	}
 
 	return confPath

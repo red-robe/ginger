@@ -7,6 +7,7 @@ import (
 	"github.com/gofuncchan/ginger/cache"
 	"github.com/gofuncchan/ginger/common"
 	"github.com/gofuncchan/ginger/model"
+	"github.com/gofuncchan/ginger/util/e"
 	"github.com/gofuncchan/ginger/util/jwt"
 	"github.com/gofuncchan/ginger/util/logger"
 	"net/http"
@@ -57,7 +58,7 @@ func SignUp(c *gin.Context) {
 			Email: form.Email,
 		}
 		tkStr, err := jwt.JwtService.Encode(userClaim)
-		common.Eh(err)
+		e.Eh(err)
 
 		// Redis存储token保存登录状态
 		userKey := "user_token_" + strconv.Itoa(int(id))
@@ -113,7 +114,7 @@ func SignIn(c *gin.Context) {
 		}
 
 		tkStr, err := jwt.JwtService.Encode(userClaim)
-		common.Eh(err)
+		e.Eh(err)
 
 		// Redis存储token保存登录状态
 		userKey := "user_token_" + strconv.Itoa(int(userInfo.ID))

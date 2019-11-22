@@ -15,10 +15,6 @@ func GingerWithZap(logger *zap.Logger) gin.HandlerFunc {
 		query := c.Request.URL.RawQuery
 		postForm := c.Request.PostForm.Encode()
 
-		// 生成traceId
-		// traceId := common.GenTraceId(c.ClientIP())
-		// c.Set("traceId", traceId)
-
 		c.Next()
 
 		end := time.Now()
@@ -30,7 +26,6 @@ func GingerWithZap(logger *zap.Logger) gin.HandlerFunc {
 		} else {
 			logger.Info("[Global Request Log]",
 				zap.String("ip", c.ClientIP()),
-				zap.Time("time", start.UTC()),
 				zap.Duration("latency", latency),
 				zap.Int("status", c.Writer.Status()),
 				zap.String("method", c.Request.Method),

@@ -1,8 +1,8 @@
 package model
 
 import (
-	"github.com/gofuncchan/ginger/common"
 	builder "github.com/gofuncchan/ginger/dao/mysql/user_builder"
+	"github.com/gofuncchan/ginger/util/e"
 	"time"
 )
 
@@ -19,7 +19,7 @@ func CreateUserByEmail(name, email, passwd, salt string) int64 {
 	})
 
 	id, err := builder.Insert(data)
-	if !common.Em(err) {
+	if !e.Em(err) {
 		return -1
 	}
 	return id
@@ -36,7 +36,7 @@ func CreateUserByPhone(name, phone, passwd, salt string) int64 {
 	})
 
 	id, err := builder.Insert(data)
-	if !common.Em(err) {
+	if !e.Em(err) {
 		return -1
 	}
 	return id
@@ -50,7 +50,7 @@ func UpdateUserInfo(id int, data map[string]interface{}) bool {
 
 	_, err := builder.Update(where, data)
 
-	return common.Em(err)
+	return e.Em(err)
 }
 
 // 根据邮箱和密码验证用户登录
@@ -60,7 +60,7 @@ func GetUserInfoByEmail(email string) *builder.User {
 	}
 
 	userInfo, err := builder.GetOne(where)
-	if !common.Em(err) {
+	if !e.Em(err) {
 		return nil
 	}
 	return userInfo
@@ -73,7 +73,7 @@ func GetUserInfoByPhone(phone string) *builder.User {
 	}
 
 	userInfo, err := builder.GetOne(where)
-	if !common.Em(err) {
+	if !e.Em(err) {
 		return nil
 	}
 	return userInfo
@@ -86,7 +86,7 @@ func IsUserExistByEmail(email string) bool {
 	}
 
 	count, err := builder.GetCount(where)
-	if !common.Em(err) {
+	if !e.Em(err) {
 		return false
 	}
 
@@ -100,7 +100,7 @@ func IsUserExistByPhone(phone string) bool {
 	}
 
 	count, err := builder.GetCount(where)
-	if !common.Em(err) {
+	if !e.Em(err) {
 		return false
 	}
 	return count == 1
@@ -113,7 +113,7 @@ func IsUserExistByName(name string) bool {
 	}
 
 	count, err := builder.GetCount(where)
-	if !common.Em(err) {
+	if !e.Em(err) {
 		return false
 	}
 	return count == 1

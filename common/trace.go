@@ -9,7 +9,6 @@ import (
 	"time"
 )
 
-
 func GenTraceId(ip string) (traceId string) {
 	now := time.Now()
 	timestamp := uint32(now.Unix())

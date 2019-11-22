@@ -5,10 +5,10 @@ import (
 	"github.com/gofuncchan/ginger/boot"
 	"github.com/gofuncchan/ginger/common"
 	"github.com/gofuncchan/ginger/config"
+	"github.com/gofuncchan/ginger/logger"
 	ginger_zap_logger "github.com/gofuncchan/ginger/middleware/logger"
 	ginger_zap_recovery "github.com/gofuncchan/ginger/middleware/recovery"
 	"github.com/gofuncchan/ginger/router"
-	"github.com/gofuncchan/ginger/util/logger"
 	"strconv"
 )
 
@@ -24,10 +24,11 @@ func main() {
 	// zap 日志库
 	// zapLogger, _ := zap.NewProduction() //使用默认生存环境配置
 	// zapLogger, _ := zap.NewDevelopment() //使用默认开发环境配置
-	zapLogger := logger.ZapLog // 使用自定义配置
-	defer zapLogger.Sync() // 刷新所有缓冲的日志条目。
-	engine.Use(ginger_zap_logger.GingerWithZap(zapLogger))
-	engine.Use(ginger_zap_recovery.GingerRecoveryWithZap(zapLogger, true))
+
+	// 使用自定义配置的zap logger
+	defer logger.ZapLogger.Sync() // 退出前刷新所有缓冲的日志
+	engine.Use(ginger_zap_logger.GingerWithZap(logger.ZapLogger))
+	engine.Use(ginger_zap_recovery.GingerRecoveryWithZap(logger.ZapLogger, true))
 
 	// 路由设置
 	router.Router(engine)
@@ -36,7 +37,6 @@ func main() {
 	engine.LoadHTMLGlob("views/*")
 
 	err = engine.Run(":" + strconv.Itoa(int(config.BaseConf.ListenPort)))
-	common.Ef(err)
-
+	common.EF(err)
 
 }

@@ -1,8 +1,8 @@
 package redis
 
 import (
+	"fmt"
 	"github.com/garyburd/redigo/redis"
-	"github.com/gofuncchan/ginger/common"
 	"github.com/gofuncchan/ginger/config"
 	"github.com/gofuncchan/ginger/util/logger"
 	"strconv"
@@ -28,19 +28,20 @@ func Init() {
 			redisAddr := config.RedisConf.DbHost + ":" + strconv.Itoa(int(config.RedisConf.DbPort))
 			conn, err := redis.Dial("tcp", redisAddr)
 			if err != nil {
-				common.Ec(err)
+				fmt.Println("redis dial fatal:", err.Error())
 				return nil, err
 			}
 			// 权限认证
 			if config.RedisConf.DbAuth {
 				if _, err := conn.Do("Auth", config.RedisConf.DbPasswd); err != nil {
-					common.Ec(err)
+					fmt.Println("redis auth fatal:", err.Error())
 					conn.Close()
 					return nil, err
 				}
 			}
 			return conn, err
 		},
+
 		// 定时检测连接是否可用
 		TestOnBorrow: func(conn redis.Conn, t time.Time) error {
 			if time.Since(t) < time.Minute {
@@ -56,7 +57,7 @@ func Init() {
 
 	// 一般启动后不关闭连接池
 	// defer poolPtr.Close()
-	logger.InfoLog("dao/redis.Init", "Redis Pool Ready!")
+	fmt.Println("Redis pool init ready!")
 }
 
 // 从Redis连接池获取一个连接

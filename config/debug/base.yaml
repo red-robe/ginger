@@ -1,4 +1,2 @@
-appName: ginger         #应用名
-version: v0.1           #版本
-env: debug              #环境
-listen: 8090            #启动监听端口
+env:      debug             #环境
+listen:   8090              #启动监听端口

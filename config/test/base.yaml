@@ -1,0 +1,2 @@
+env:      release             #环境
+listen:   80                  #启动监听端口

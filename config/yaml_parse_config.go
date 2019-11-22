@@ -7,10 +7,17 @@ import (
 )
 
 type Base struct {
-	AppName    string `yaml:"appName"`
-	Version    string `yaml:"version"`
 	Env        string `yaml:"env"`
 	ListenPort int64  `yaml:"listen"`
+}
+
+type Log struct {
+	LogDir                     string `yaml:"logDir"`
+	LogMaxDayCount             int    `yaml:"maxDayCount"`
+	LogMongoHookOn             bool   `yaml:"logMongoHookOn"`
+	LogMongoCollection         string `yaml:"logMongoCol"`
+	LogMongoExpireAfterSeconds int    `yaml:"logMongoExpire"`
+	WithRotationTime           int    `yaml:"withRotationTime"`
 }
 
 type Mysql struct {
@@ -51,30 +58,38 @@ type Mongodb struct {
 
 var (
 	BaseConf  Base
+	LogConf   Log
 	MysqlConf Mysql
 	RedisConf Redis
 	MongoConf Mongodb
 )
 
-func Init(confPath string) {
+// 动态参数配置项，编译后可携yaml配置文件启动
+func Init(confPath string){
+
 	baseConfFile, err := ioutil.ReadFile(confPath + "/base.yaml")
-	common.Ef(err)
+	common.EF(err)
 	err = yaml.Unmarshal(baseConfFile, &BaseConf)
-	common.Ef(err)
+	common.EF(err)
+
+	logConfFile, err := ioutil.ReadFile(confPath + "/log.yaml")
+	common.EF(err)
+	err = yaml.Unmarshal(logConfFile, &LogConf)
+	common.EF(err)
 
 	mysqlConfFile, err := ioutil.ReadFile(confPath + "/mysql.yaml")
-	common.Ef(err)
+	common.EF(err)
 	err = yaml.Unmarshal(mysqlConfFile, &MysqlConf)
-	common.Ef(err)
+	common.EF(err)
 
 	RedisConfFile, err := ioutil.ReadFile(confPath + "/redis.yaml")
-	common.Ef(err)
+	common.EF(err)
 	err = yaml.Unmarshal(RedisConfFile, &RedisConf)
-	common.Ef(err)
+	common.EF(err)
 
 	MongoConfFile, err := ioutil.ReadFile(confPath + "/mongodb.yaml")
-	common.Ef(err)
+	common.EF(err)
 	err = yaml.Unmarshal(MongoConfFile, &MongoConf)
-	common.Ef(err)
+	common.EF(err)
 
 }

@@ -10,12 +10,11 @@ Ginger 是一个构建gin应用的脚手架。
 - 可适应开发、测试、生成环境的配置；
 - 可追踪请求调用链；
 - 统一的输出格式
-- 开箱即用的jwt鉴权机制；
+- 开箱即用的jwt鉴权；
 - 整合sql builder方式的dao层，给不喜欢orm和原生sql的程序猿一条生路；
 - 整合mgo三方库的连接池及简易调用方法；
 - 整合redigo三方库的连接池及简易调用方法、管道调用方法；
-- 整合基于redis的简单消息队列
-- 提供简单的utils工具包
+- 提供通用的utils工具包
 - 使用ginger-cli客户端生成通用代码，轻松搭建gin应用
 
 
@@ -31,30 +30,48 @@ Ginger 是一个构建gin应用的脚手架。
 #### 目录结构
 `
 
-    root
-    |_common 公用目录：编写公共处理函数，通用错误处理，常量设置等
-    |_router 路由设置目录
-    |_handlers 业务处理函数目录
-    |_config 配置目录:配置项应可根据系统环境动态获取
+    app_root
+    |_asset 可直接访问的静态资源目录js、css、image
+    |_boot 应用启动时的初始化逻辑
+    |_cache 缓存层目录：Redis实现，保存转态信息，热点数据，数据库信息缓存等
+    |_common 公用目录：编写公共处理函数，退出错误处理等
+    |_config 配置目录:存放yaml配置文件，yaml解析代码及常量级的配置
         |_dev 存放开发环境配置文件
         |_prod 存放生产环境配置文件
         |_test 存放测试环境配置文件
-    |_util 工具包目录：编写工具类的函数或方法
-    |_asset 可直接访问的静态资源目录js、css、image
-    |_views 页面模板目录
     |_dao 数据访问层目录
-        |_mysql 该目录实现mysql连接池初始化，以及自动生成的基于sql builder基本数据库表curd
-        |_redis 该目录实现redis连接池初始化，以及通用的redis访问方法R()；
-        |_mongodb 该目录实现mongodb连接池初始化，以及通用的mongodb访问方法M()；
-        |_...
-    |_cache 缓存层目录：Redis实现，保存转态信息，热点数据，数据库信息缓存等
-    |_repository 数据仓库目录，编写mongo存储相关的业务逻辑
-    |_model 业务数据模型目录，编写mysql相关的业务存储逻辑
+            |_mysql 该目录实现mysql连接池初始化，以及自动生成的基于sql builder基本数据库表curd
+            |_redis 该目录实现redis连接池初始化，以及通用的redis访问方法R()；
+            |_mongodb 该目录实现mongodb连接池初始化，以及通用的mongodb访问方法M()；
+            |_...
+    |_handler 业务处理函数目录
+    |_logger 实现基于zap的日志记录器
     |_middleware 中间件目录
+    |_model 业务数据模型目录，编写mysql相关的业务存储逻辑
+    |_repository 数据仓库目录，编写mongo存储相关的业务逻辑
+    |_router 路由设置目录
+    |_util 工具包目录：编写工具包方法，提供基于日志记录的错误处理包，jwt编解码包，业务日志记录包
+    |_views 页面模板目录
     |_validator 自定义验证器目录
 `
 
 #### 工具
+##### ginger-cli
+脚手架代码生成工具
+https://github.com/gofuncchan/ginger-cli
+
+- init 初始化项目目录
+- handler 生成基本的handler代码
+- dao 整合gingger-forge工具，生成go struct和curd代码
+- config 根据yaml文件生成go的解析代码
+- repo 生成repository相关代码
+
+##### gingger-forge
+基于didi/gendry的dao代码生成工具
+https://github.com/gofuncchan/ginger-forge
+
+- 可根据数据库schema映射生成go struct和curd代码
+
 
 
 #### 简单示例

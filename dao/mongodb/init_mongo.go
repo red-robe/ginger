@@ -1,8 +1,8 @@
 package mongodb
 
 import (
+	"fmt"
 	"github.com/gofuncchan/ginger/common"
-	"github.com/gofuncchan/ginger/util/logger"
 	"gopkg.in/mgo.v2"
 	// "gopkg.in/mgo.v2/bson"
 )
@@ -21,15 +21,15 @@ var (
 func Init() {
 	// 启动一个Session并关闭返回的副本，只为了初始化
 	Session()
-	logger.InfoLog("dao/mongodb.Init", "Mongo Session Clone Ready!")
-
+	fmt.Println("Mongodb session clone init ready!")
 }
 
+// copy session 实现连接池
 func Session() *mgo.Session {
 	if session == nil {
 		session, err = mgo.Dial("localhost")
 		if err != nil {
-			common.Ef(err)
+			common.EF(err)
 		}
 	}
 	return session.Clone()

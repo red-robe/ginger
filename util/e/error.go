@@ -1,4 +1,4 @@
-package common
+package e
 
 import (
 	"github.com/gofuncchan/ginger/util/logger"
@@ -10,10 +10,10 @@ import (
 func Eh(err error) bool {
 	if err != nil {
 		var path = "handler"
-		if _, file, line, ok := runtime.Caller(1);ok {
+		if _, file, line, ok := runtime.Caller(1); ok {
 			path = file + "" + strconv.Itoa(line)
 		}
-		logger.ErrorLog("Eh",path,err)
+		logger.ErrorLog("Eh", path, err)
 		return false
 	}
 	return true
@@ -23,10 +23,10 @@ func Eh(err error) bool {
 func Em(err error) bool {
 	if err != nil {
 		var path = "model"
-		if _, file, line, ok := runtime.Caller(1);ok {
+		if _, file, line, ok := runtime.Caller(1); ok {
 			path = file + "" + strconv.Itoa(line)
 		}
-		logger.ErrorLog("Em",path,err)
+		logger.ErrorLog("Em", path, err)
 		return false
 	}
 	return true
@@ -36,22 +36,13 @@ func Em(err error) bool {
 func Ec(err error) bool {
 	if err != nil {
 		var path = "undefine"
-		if _, file, line, ok := runtime.Caller(1);ok {
+		if _, file, line, ok := runtime.Caller(1); ok {
 			path = file + "" + strconv.Itoa(line)
 		}
-		logger.ErrorLog("Ec",path,err)
+		logger.ErrorLog("Ec", path, err)
 		return false
 	}
 	return true
 }
 
-// 退出程序的错误处理
-func Ef(err error) {
-	if err != nil {
-		var path = "undefine"
-		if _, file, line, ok := runtime.Caller(1);ok {
-			path = file + "" + strconv.Itoa(line)
-		}
-		logger.FailLog(path, err)
-	}
-}
+

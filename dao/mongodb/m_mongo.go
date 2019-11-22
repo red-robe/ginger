@@ -17,7 +17,7 @@ import (
 		fmt.Println("查询一个结果：", oneData)
 	})
 */
-func M(collection string, f func(*mgo.Collection)) {
+func M(collection string, f func(*mgo.Collection) error) error {
 	// 申请一个mongodb连接拷贝
 	session := Session()
 	// 使用完即释放连接
@@ -27,5 +27,5 @@ func M(collection string, f func(*mgo.Collection)) {
 
 	// 返回一个collection连接闭包
 	c := session.DB(config.MongoConf.DbName).C(collection)
-	f(c)
+	return f(c)
 }

@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"github.com/gofuncchan/ginger/logger"
 	"go.uber.org/zap"
 	"runtime"
 	"strconv"
@@ -14,7 +15,7 @@ import (
 // 由业务逻辑直接调用
 func InfoLog(where, info string) {
 	var msg string
-	ZapLog.Info(msg,
+	logger.ZapLogger.Info(msg,
 		zap.String("where", where),
 		zap.String("info", info),
 	)
@@ -28,7 +29,7 @@ func WarmLog(err error) {
 		path = file + "" + strconv.Itoa(line)
 	}
 	msg := "[Warming In " + path + "]"
-	ZapLog.Warn(msg,
+	logger.ZapLogger.Warn(msg,
 		zap.String("path", path),
 		zap.String("warming", err.Error()),
 	)
@@ -47,7 +48,7 @@ func ErrorLog(t, path string, err error) {
 		msg = "[Error In " + path + "]"
 	}
 
-	ZapLog.Error(msg,
+	logger.ZapLogger.Error(msg,
 		zap.String("type", t),
 		zap.String("path", path),
 		zap.String("error", err.Error()),
@@ -58,7 +59,7 @@ func ErrorLog(t, path string, err error) {
 // 由Ef函数调用，path在错误处理跟踪
 func FailLog(path string, err error) {
 	msg := "[Fail In " + path + "]"
-	ZapLog.Fatal(msg,
+	logger.ZapLogger.Fatal(msg,
 		zap.String("path", path),
 		zap.String("fail", err.Error()),
 	)
