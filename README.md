@@ -18,15 +18,6 @@ Ginger 是一个构建gin应用的脚手架。
 - 使用ginger-cli客户端生成通用代码，轻松搭建gin应用
 
 
-## 开始
-
-
-#### 依赖
-
-
-#### 安装
-
-
 #### 目录结构
 `
 
@@ -64,7 +55,9 @@ https://github.com/gofuncchan/ginger-cli
 - handler 生成基本的handler代码
 - dao 整合gingger-forge工具，生成go struct和curd代码
 - config 根据yaml文件生成go的解析代码
-- repo 生成repository相关代码
+- repo 生成基于mongodb的repository相关代码
+- model 生成基于mysql的业务数据模型相关代码
+- cache 生成基于redis的缓存操作代码
 
 ##### gingger-forge
 基于didi/gendry的dao代码生成工具
@@ -72,7 +65,4 @@ https://github.com/gofuncchan/ginger-forge
 
 - 可根据数据库schema映射生成go struct和curd代码
 
-
-
-#### 简单示例
 
