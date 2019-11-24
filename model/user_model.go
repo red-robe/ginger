@@ -1,7 +1,7 @@
 package model
 
 import (
-	builder "github.com/gofuncchan/ginger/dao/mysql/user_builder"
+	"github.com/gofuncchan/ginger/dao/mysql/user"
 	"github.com/gofuncchan/ginger/util/e"
 	"time"
 )
@@ -18,7 +18,7 @@ func CreateUserByEmail(name, email, passwd, salt string) int64 {
 		"update_at": time.Now(),
 	})
 
-	id, err := builder.Insert(data)
+	id, err := user.Insert(data)
 	if !e.Em(err) {
 		return -1
 	}
@@ -35,7 +35,7 @@ func CreateUserByPhone(name, phone, passwd, salt string) int64 {
 		"salt":   salt,
 	})
 
-	id, err := builder.Insert(data)
+	id, err := user.Insert(data)
 	if !e.Em(err) {
 		return -1
 	}
@@ -48,18 +48,18 @@ func UpdateUserInfo(id int, data map[string]interface{}) bool {
 		"id": uint(id),
 	}
 
-	_, err := builder.Update(where, data)
+	_, err := user.Update(where, data)
 
 	return e.Em(err)
 }
 
 // 根据邮箱和密码验证用户登录
-func GetUserInfoByEmail(email string) *builder.User {
+func GetUserInfoByEmail(email string) *user.User {
 	where := map[string]interface{}{
 		"email": email,
 	}
 
-	userInfo, err := builder.GetOne(where)
+	userInfo, err := user.GetOne(where)
 	if !e.Em(err) {
 		return nil
 	}
@@ -67,12 +67,12 @@ func GetUserInfoByEmail(email string) *builder.User {
 }
 
 // 根据手机和密码验证用户登录
-func GetUserInfoByPhone(phone string) *builder.User {
+func GetUserInfoByPhone(phone string) *user.User {
 	where := map[string]interface{}{
 		"phone": phone,
 	}
 
-	userInfo, err := builder.GetOne(where)
+	userInfo, err := user.GetOne(where)
 	if !e.Em(err) {
 		return nil
 	}
@@ -85,7 +85,7 @@ func IsUserExistByEmail(email string) bool {
 		"email": email,
 	}
 
-	count, err := builder.GetCount(where)
+	count, err := user.GetCount(where)
 	if !e.Em(err) {
 		return false
 	}
@@ -99,7 +99,7 @@ func IsUserExistByPhone(phone string) bool {
 		"phone": phone,
 	}
 
-	count, err := builder.GetCount(where)
+	count, err := user.GetCount(where)
 	if !e.Em(err) {
 		return false
 	}
@@ -112,7 +112,7 @@ func IsUserExistByName(name string) bool {
 		"name": name,
 	}
 
-	count, err := builder.GetCount(where)
+	count, err := user.GetCount(where)
 	if !e.Em(err) {
 		return false
 	}
