@@ -69,7 +69,7 @@ https://github.com/gofuncchan/ginger-forge
 ##### 方式一：download
 - 下载项目:
 
-    `git clone https://github.com/gofuncchan/ginger {your project name}`
+    `git clone https://github.com/gofuncchan/ginger.git {your project name}`
 
 - 由于使用go module,请自定义go.mod文件的replace本地代码目录，或运行以下代码：
 
