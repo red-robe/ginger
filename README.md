@@ -19,7 +19,7 @@ Ginger 是一个构建gin应用的脚手架。
 
 
 #### 目录结构
-`
+
 
     app_root
     |_asset 可直接访问的静态资源目录js、css、image
@@ -44,7 +44,7 @@ Ginger 是一个构建gin应用的脚手架。
     |_util 工具包目录：编写工具包方法，提供基于日志记录的错误处理包，jwt编解码包，业务日志记录包
     |_views 页面模板目录
     |_validator 自定义验证器目录
-`
+
 
 #### 工具
 ##### ginger-cli
@@ -64,5 +64,44 @@ https://github.com/gofuncchan/ginger-cli
 https://github.com/gofuncchan/ginger-forge
 
 - 可根据数据库schema映射生成go struct和curd代码
+
+#### 用例
+##### 方式一：download
+- 下载项目:
+
+    `git clone https://github.com/gofuncchan/ginger {your project name}`
+
+- 由于使用go module,请自定义go.mod文件的replace本地代码目录，或运行以下代码：
+
+    ` cd {your project name} && go mod edit -replace github.com/gofuncchan/ginger={your project directory}`
+
+- 在/config目录下重置或新增配置项，并解析到全局变量
+
+- 运行程序：
+
+    `go run main.go`
+
+##### 方式二：使用ginger-cli工具
+
+- 安装工具:
+
+    `go get -u github.com/gofuncchan/ginger-cli`
+    
+- 初始化项目:
+
+    请确保你的$GOPATH/bin已设置到全局变量$PATH,切换到你的代码目录，执行init命令，会在你的代码目录创建项目脚手架
+    
+    `ginger-cli init {your project name} [-g]`
+    
+- 在/config目录下重置或新增配置项，并解析到全局变量
+
+- 运行程序：
+
+    `go run main.go`
+    
+#### Tips:
+   
+   脚手架项目代码内默认使用github.com/gofuncchan/ginger作为内部根包名，如需使用可fork本项目并自行修改代码，或下载本项目自行全局替换成你的自定义包名，并修改go.mod文件
+
 
 
