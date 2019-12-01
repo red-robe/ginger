@@ -57,7 +57,7 @@ func getCoreList() (coreList []zapcore.Core) {
 	// 构建hook的 WriteSyncer 列表
 	var infoWriteSyncerList, warnWriteSyncerList, errorWriteSyncerList, fatalWriteSyncerList []zapcore.WriteSyncer
 
-	if config.LogConf.LogMongoHookOn {
+	if config.LogConf.LogMongoHookSwitch {
 		// 如开启日志写入mongodb ，将mongo hook 加入WriteSyncer
 		mongoLogHook := &MongoLogHook{}
 		infoWriteSyncerList = append(infoWriteSyncerList, zapcore.AddSync(mongoLogHook))

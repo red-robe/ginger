@@ -23,7 +23,7 @@ func InfoLog(where, info string) {
 
 // 警告日志记录：当前或未来潜在问题（比如响应速度慢、连接断开、内存吃紧等等)；
 // 由业务逻辑直接调用
-func WarmLog(err error) {
+func WarmLog(info string) {
 	var path string
 	if _, file, line, ok := runtime.Caller(1); ok {
 		path = file + "" + strconv.Itoa(line)
@@ -31,7 +31,7 @@ func WarmLog(err error) {
 	msg := "[Warming In " + path + "]"
 	logger.ZapLogger.Warn(msg,
 		zap.String("path", path),
-		zap.String("warming", err.Error()),
+		zap.String("warming", info),
 	)
 }
 

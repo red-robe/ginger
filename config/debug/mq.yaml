@@ -1,0 +1,15 @@
+mqSwitch: false #消息中间件启用开关
+mqSelect: redis #选择哪个mq服务(redis|nats|kafka)
+redisMq:
+  dbHost: localhost #redis主机
+  dbPort: 6379      #端口号
+  dbAuth: FALSE     #是否开启鉴权
+  dbPasswd: 123456  #鉴权密码
+  maxActive: 0      #最大活动链接数。0为无限
+  maxIdle: 50       #最大闲置链接数，0为无限
+  idleTimeout: 60   #闲置链接超时时间
+natsMq:
+  hostUrl: localhost #nats-server的主机地址
+
+kafkaMq:
+  hostUrl: localhost #nats-server的主机地址

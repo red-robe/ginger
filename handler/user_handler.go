@@ -46,7 +46,7 @@ func SignUp(c *gin.Context) {
 		id := model.CreateUserByEmail(form.Name, form.Email, passHash, salt)
 		if id == -1 {
 			err := errors.New("register error,please try again")
-			logger.WarmLog(err)
+			logger.WarmLog(err.Error())
 			common.ResponseServerError(c, err)
 			return
 		}

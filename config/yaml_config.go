@@ -14,7 +14,7 @@ type Base struct {
 type Log struct {
 	LogDir                     string `yaml:"logDir"`
 	LogMaxDayCount             int    `yaml:"maxDayCount"`
-	LogMongoHookOn             bool   `yaml:"logMongoHookOn"`
+	LogMongoHookSwitch             bool   `yaml:"logMongoHookSwitch"`
 	LogMongoCollection         string `yaml:"logMongoCol"`
 	LogMongoExpireAfterSeconds int    `yaml:"logMongoExpire"`
 	WithRotationTime           int    `yaml:"withRotationTime"`
@@ -48,13 +48,45 @@ type Redis struct {
 	IdleTimeout int64  `yaml:"idleTimeout"`
 }
 
-type Mongodb struct {
-	DbHost   string `yaml:"dbHost"`
-	DbPort   int64  `yaml:"dbPort"`
-	DbUser   string `yaml:"dbUser"`
+type Mongodb struct{
+	DbHosts []string `yaml:"dbHosts"`
+	DbPorts []int `yaml:"dbPorts"`
+	DbUser string `yaml:"dbUser"`
 	DbPasswd string `yaml:"dbPasswd"`
-	DbName   string `yaml:"dbName"`
+	DbName string `yaml:"dbName"`
 }
+
+
+
+type Mq struct{
+	KafkaMq
+	MqSwitch bool `yaml:"mqSwitch"`
+	MqSelect string `yaml:"mqSelect"`
+	RedisMq
+	NatsMq
+
+}
+
+type KafkaMq struct{
+	HostUrl string `yaml:"hostUrl"`
+
+}
+
+type RedisMq struct{
+	DbPort int `yaml:"dbPort"`
+	DbAuth bool `yaml:"dbAuth"`
+	DbPasswd int `yaml:"dbPasswd"`
+	DbHost string `yaml:"dbHost"`
+	MaxActive   int64  `yaml:"maxActive"`
+	MaxIdle     int64  `yaml:"maxIdle"`
+	IdleTimeout int64  `yaml:"idleTimeout"`
+}
+
+type NatsMq struct{
+	HostUrl string `yaml:"hostUrl"`
+
+}
+
 
 var (
 	BaseConf  Base
@@ -62,6 +94,7 @@ var (
 	MysqlConf Mysql
 	RedisConf Redis
 	MongoConf Mongodb
+	MqConf Mq
 )
 
 // 动态参数配置项，编译后可携yaml配置文件启动
@@ -91,5 +124,11 @@ func Init(confPath string){
 	common.EF(err)
 	err = yaml.Unmarshal(MongoConfFile, &MongoConf)
 	common.EF(err)
+
+	MqConfFile, err := ioutil.ReadFile(confPath + "/mq.yaml")
+	common.EF(err)
+	err = yaml.Unmarshal(MqConfFile, &MqConf)
+	common.EF(err)
+
 
 }

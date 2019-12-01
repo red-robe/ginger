@@ -12,7 +12,7 @@ func Init() {
 	ZapLogger = zapLogger()
 
 	// 如果开启mongo异步记录日志，则记录mongo hook的日志信息
-	if config.LogConf.LogMongoHookOn {
+	if config.LogConf.LogMongoHookSwitch {
 		ZapHookLogger = zapHookLogger()
 	}
 

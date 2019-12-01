@@ -1,5 +1,7 @@
-dbHost: localhost
-dbPort: 27017
-dbUser: ginger_user
-dbPasswd: 123456
+dbHosts:
+  - localhost
+dbPorts:
+  - 27017
+dbUser: ""
+dbPasswd: ""
 dbName: ginger_db

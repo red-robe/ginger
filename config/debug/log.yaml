@@ -1,6 +1,6 @@
 logDir:              /data/ginger/log    #日志本地文件目录
 maxDayCount:         30                 #日志数据最多保留的日志天数
-logMongoHookOn:      true               #启用mongo数据库记录日志数据
+logMongoHookSwitch:      true               #启用mongo数据库记录日志数据的开关
 logMongoCol:         ginger_log         #mongo的日志数据collection
 logMongoExpire:      3600               #mongo日志指定时间间隔后, 自动过期
 withRotationTime:    1                  #多久做一次归档，单位天

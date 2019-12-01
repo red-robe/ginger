@@ -49,7 +49,7 @@ func Init() {
 			}
 			_, err := conn.Do("Ping")
 			if err != nil {
-				logger.WarmLog(err)
+				logger.WarmLog("Redis Server Disconnect")
 			}
 			return err
 		},

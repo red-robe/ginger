@@ -14,13 +14,16 @@ require (
 	github.com/json-iterator/go v1.1.6
 	github.com/lestrrat-go/file-rotatelogs v2.2.0+incompatible
 	github.com/lestrrat-go/strftime v1.0.0 // indirect
+	github.com/nats-io/nats-server/v2 v2.1.2 // indirect
+	github.com/nats-io/nats.go v1.9.1
+	github.com/pkg/errors v0.8.1
 	github.com/tebeka/strftime v0.1.3 // indirect
 	go.uber.org/zap v1.10.0
-	golang.org/x/sys v0.0.0-20190422165155-953cdadca894 // indirect
 	google.golang.org/appengine v0.0.0-00010101000000-000000000000 // indirect
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
 	gopkg.in/yaml.v2 v2.2.2
 )
+
 replace github.com/gofuncchan/ginger => /Users/fun/Code/go/src/github.com/gofuncchan/ginger
 
 replace golang.org/x/text => github.com/golang/text v0.3.2
