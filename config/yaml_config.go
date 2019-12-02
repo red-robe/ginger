@@ -59,32 +59,33 @@ type Mongodb struct{
 
 
 type Mq struct{
-	KafkaMq
-	MqSwitch bool `yaml:"mqSwitch"`
-	MqSelect string `yaml:"mqSelect"`
 	RedisMq
 	NatsMq
-
-}
-
-type KafkaMq struct{
-	HostUrl string `yaml:"hostUrl"`
-
 }
 
 type RedisMq struct{
+	Switch bool `yaml:"switch"`
+	MaxActive int `yaml:"maxActive"`
+	MaxIdle int `yaml:"maxIdle"`
+	IdleTimeout int `yaml:"idleTimeout"`
+	DbHost string `yaml:"dbHost"`
 	DbPort int `yaml:"dbPort"`
 	DbAuth bool `yaml:"dbAuth"`
 	DbPasswd int `yaml:"dbPasswd"`
-	DbHost string `yaml:"dbHost"`
-	MaxActive   int64  `yaml:"maxActive"`
-	MaxIdle     int64  `yaml:"maxIdle"`
-	IdleTimeout int64  `yaml:"idleTimeout"`
+
 }
 
 type NatsMq struct{
-	HostUrl string `yaml:"hostUrl"`
+	Switch bool `yaml:"switch"`
+	NatsServers []NatsServer `yaml:"natsServers"`
+}
 
+type NatsServer struct {
+	Host string `yaml:"host"`
+	Port int	`yaml:"port"`
+	AuthSwitch bool `yaml:"authSwitch"`
+	UserName string `yaml:"userName"`
+	Password string `yaml:"password"`
 }
 
 

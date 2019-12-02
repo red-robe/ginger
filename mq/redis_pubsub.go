@@ -3,99 +3,35 @@ package mq
 import (
 	"context"
 	"fmt"
-	redigo "github.com/garyburd/redigo/redis"
-	"github.com/gofuncchan/ginger/config"
 	"github.com/gofuncchan/ginger/util/logger"
-	"strconv"
+	redigo "github.com/garyburd/redigo/redis"
+
 	"time"
 )
 
-var redisMqPoolPtr *redigo.Pool
+var RedisMq *RedisPubSub
 
-// 原则上用于缓存的redis机器与用于pubsub的redis机器分开较好，如实在用同一个，只需在config配置填写一样即可
-func redisMqInit()  {
-	// 配置并获得一个连接池对象的指针
-	redisMqPoolPtr = &redigo.Pool{
-		// 最大活动链接数。0为无限
-		MaxActive: int(config.MqConf.RedisMq.MaxActive),
-		// 最大闲置链接数，0为无限
-		MaxIdle: int(config.MqConf.RedisMq.MaxIdle),
-		// 闲置链接超时时间
-		IdleTimeout: time.Duration(config.MqConf.RedisMq.IdleTimeout) * time.Second,
-		// 连接池的连接拨号
-		Dial: func() (redigo.Conn, error) {
-			// 连接
-			redisAddr := config.MqConf.RedisMq.DbHost + ":" + strconv.Itoa(int(config.MqConf.RedisMq.DbPort))
-			conn, err := redigo.Dial("tcp", redisAddr)
-			if err != nil {
-				fmt.Println("redis dial fatal:", err.Error())
-				return nil, err
-			}
-			// 权限认证
-			if config.MqConf.RedisMq.DbAuth {
-				if _, err := conn.Do("Auth", config.MqConf.RedisMq.DbPasswd); err != nil {
-					fmt.Println("redis auth fatal:", err.Error())
-					conn.Close()
-					return nil, err
-				}
-			}
-			return conn, err
-		},
-
-		// 定时检测连接是否可用
-		TestOnBorrow: func(conn redigo.Conn, t time.Time) error {
-			if time.Since(t) < time.Minute {
-				return nil
-			}
-			_, err := conn.Do("Ping")
-			if err != nil {
-				logger.WarmLog("Redis PubSub Server Disconnect")
-			}
-			return err
-		},
-	}
-
-	// 一般启动后不关闭连接池
-	// defer poolPtr.Close()
-
-	GingerMq = new(RedisMq)
-	fmt.Println("Redis PubSub init ready!")
-
-
-}
-
-// 从Redis连接池获取一个连接
-func GetRedisConn() redigo.Conn {
-	conn := redisMqPoolPtr.Get()
-	return conn
-}
-
-func GetRedisPubSubConn() redigo.PubSubConn {
-	conn := redisMqPoolPtr.Get()
-	psConn := redigo.PubSubConn{Conn: conn}
-	return psConn
-}
 
 // 实现GingerMQ接口的entity
-type RedisMq struct {}
+type RedisPubSub struct{}
 
 /*
 发布消息
-@param topic string 发布频道
+@param channel string 发布频道
 @param msg interface{} 发布的消息
 */
-func (mq *RedisMq) Public(topic string, msg interface{}) error {
+func (mq *RedisPubSub) Public(channel string, msg interface{}) error {
 	conn := GetRedisConn()
 	defer conn.Close()
 
-	receiveNum, err := redigo.Int(conn.Do("PUBLIC", topic, redigo.Args{}.AddFlat(msg)))
+	receiveNum, err := redigo.Int(conn.Do("PUBLIC", channel, redigo.Args{}.AddFlat(msg)))
 	if err != nil {
 		return err
 	}
 
 	if receiveNum == 0 {
-		// 订阅并接收到该topic的数量为receiveNum
-		logger.WarmLog(fmt.Sprintf("Nobody subscribe or receive %s topic  ", topic))
+		// 订阅并接收到该channel的数量为receiveNum
+		logger.WarmLog(fmt.Sprintf("Nobody subscribe or receive %s channel  ", channel))
 	}
 
 	return nil
@@ -106,7 +42,7 @@ func (mq *RedisMq) Public(topic string, msg interface{}) error {
 @param receiveMsgFunc func(channel string, data []byte) error 接收消息的处理函数
 @param channels []string 订阅的频道，允许多个
 */
-func (mq *RedisMq) Subscribe(receiveMsgFunc recSubMsgFunc,channels ...string) error {
+func (mq *RedisPubSub) Subscribe(receiveMsgFunc recSubMsgFunc, channels ...string) error {
 	psConn := GetRedisPubSubConn()
 	defer psConn.Close()
 
@@ -130,7 +66,7 @@ func (mq *RedisMq) Subscribe(receiveMsgFunc recSubMsgFunc,channels ...string) er
 }
 
 // 按模式匹配字符串的频道订阅
-func PSubscribe(receiveMsgFunc recSubMsgFunc,channelsWithPattern ...string) error {
+func  (mq *RedisPubSub) PSubscribe(receiveMsgFunc recSubMsgFunc, channelsWithPattern ...string) error {
 	psConn := GetRedisPubSubConn()
 	defer psConn.Close()
 
@@ -163,7 +99,7 @@ func receiveRedisSubcribeMessage(
 ) error {
 
 	var err error
-	// 启动一个协程去获取订阅topic的返回信息
+	// 启动一个协程去获取订阅channel的返回信息
 	done := make(chan error, 1)
 	go func() {
 		for {
@@ -214,7 +150,7 @@ loop:
 }
 
 // 取消订阅
-func (mq *RedisMq) Unsubscribe(channels... string) error{
+func (mq *RedisPubSub) Unsubscribe(channels ...string) error {
 	psConn := GetRedisPubSubConn()
 	defer psConn.Close()
 
@@ -224,7 +160,7 @@ func (mq *RedisMq) Unsubscribe(channels... string) error{
 }
 
 // 按模式匹配字符串的频道取消订阅
-func (mq *RedisMq) PUnsubscribe(channelsWithPattern... string) error{
+func (mq *RedisPubSub) PUnsubscribe(channelsWithPattern ...string) error {
 	psConn := GetRedisPubSubConn()
 	defer psConn.Close()
 
