@@ -1,6 +1,7 @@
-package mq
+package natsMq
 
 import (
+	"fmt"
 	"github.com/gofuncchan/ginger/config"
 	"github.com/gofuncchan/ginger/util/logger"
 	"github.com/nats-io/nats.go"
@@ -15,10 +16,12 @@ NatsMq，类似于redis式的轻量级消息中间件，用于高吞吐量的应
 应用场景：　寻址、发现、命令和控制（控制面板）、负载均衡、多路可伸缩能力、定位透明、容错等。
 */
 
-var NatsMq *NatsMQ
+var NatsMqConnPool *NatsPool
 
-func natsMqInit() {
+func NatsMqInit() {
+	var err error
 	var serverList []string
+	var natsServersUrl string
 	for _, server := range config.MqConf.NatsMq.NatsServers {
 		var natsUrl = "nats://"
 		if server.Host == "" {
@@ -31,63 +34,41 @@ func natsMqInit() {
 		}
 		serverList = append(serverList, natsUrl)
 	}
-
-	// TODO nats client 实现连接池
-	// 连接nats server
-	NatsServersUrl := strings.Join(serverList, ",")
-	nc, err := nats.Connect(NatsServersUrl,
-		nats.MaxReconnects(5),         // 设置重新连接等待和最大重新连接尝试次数
-		nats.ReconnectWait(2*time.Second), // 每次重连等待时间
-		nats.DisconnectErrHandler(func(nc *nats.Conn, err error) {
-			logger.WarmLog("Nats server disconnected Reason:" + err.Error())
-		}),                                // 断开连接的错误处理
-		nats.ReconnectHandler(func(nc *nats.Conn) {
-			logger.WarmLog("Nats server reconnected to " + nc.ConnectedUrl())
-		}),                                // 重连时的错误处理
-		nats.ClosedHandler(func(nc *nats.Conn) {
-			logger.WarmLog("Nats server connection closed. Reason: " + nc.LastError().Error())
-		}),                                // 关闭连接时的错误处理
-	)
-	if err != nil {
-		logger.FailLog("mq.natsMqInit Connect", err)
+	if len(serverList) > 1 {
+		natsServersUrl = strings.Join(serverList, ",")
+	} else {
+		natsServersUrl = serverList[0]
 	}
-	c, err := nats.NewEncodedConn(nc, nats.JSON_ENCODER)
+	fmt.Println("natsServersUrl:",natsServersUrl)
+
+
+	//  nats conn 初始化连接池
+	NatsMqConnPool, err = NewDefaultPool(natsServersUrl)
 	if err != nil {
-		logger.FailLog("mq.natsMqInit NewEncodedConn", err)
+		logger.FailLog("NewDefaultPool Error", err)
 	}
-	defer c.Close()
 
-	NatsMq = new(NatsMQ)
-	NatsMq.conn = c
 }
 
-type NatsMQ struct {
-	conn *nats.EncodedConn
-}
-
-// 收到执行关闭
-func (mq *NatsMQ) Close() {
-	mq.conn.Close()
-}
 
 /*
 Flush 当执行完整个服务并接收到所有内部reply时返回
 */
-func (mq *NatsMQ) Flush() error {
-	return mq.conn.Flush()
+func Flush(conn nats.Conn) error {
+	return conn.Flush()
 }
 
 /*
 Flush的超时限制的实现
 */
-func (mq *NatsMQ) FlushTimeout(timeout time.Duration) error {
-	return mq.conn.FlushTimeout(timeout)
+func FlushTimeout(conn nats.Conn,timeout time.Duration) error {
+	return conn.FlushTimeout(timeout)
 }
 
 /*
 Drain将使连接处于排空状态。所有订阅都将立即进入耗尽状态。完成后，发布服务器将被耗尽，并且不能发布任何其他消息。
 一旦排空发布服务器，连接将关闭。使用ClosedCB()选项可以知道连接何时已从排出状态移到关闭状态。
 */
-func (mq *NatsMQ) Drain() error {
-	return mq.conn.Drain()
+func Drain(conn nats.Conn) error {
+	return conn.Drain()
 }

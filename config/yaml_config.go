@@ -59,8 +59,8 @@ type Mongodb struct{
 
 
 type Mq struct{
-	RedisMq
-	NatsMq
+	RedisMq `yaml:"redisMq"`
+	NatsMq `yaml:"natsMq"`
 }
 
 type RedisMq struct{
@@ -77,7 +77,7 @@ type RedisMq struct{
 
 type NatsMq struct{
 	Switch bool `yaml:"switch"`
-	NatsServers []NatsServer `yaml:"natsServers"`
+	NatsServers []NatsServer `yaml:"natsServer"`
 }
 
 type NatsServer struct {

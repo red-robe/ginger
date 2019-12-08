@@ -30,6 +30,7 @@ Ginger 是一个构建gin应用的脚手架。
         |_dev 存放开发环境配置文件
         |_prod 存放生产环境配置文件
         |_test 存放测试环境配置文件
+    |_cron 定时任务代码目录
     |_dao 数据访问层目录
             |_mysql 该目录实现mysql连接池初始化，以及自动生成的基于sql builder基本数据库表curd
             |_redis 该目录实现redis连接池初始化，以及通用的redis访问方法R()；
@@ -39,8 +40,10 @@ Ginger 是一个构建gin应用的脚手架。
     |_logger 实现基于zap的日志记录器
     |_middleware 中间件目录
     |_model 业务数据模型目录，编写mysql相关的业务存储逻辑
+    |_mq 实现消息中间件系统的client，这里整合了redis pubsub和nats，可根据业务随意使用，在配置文件mq.yaml配置必要项即可
     |_repository 数据仓库目录，编写mongo存储相关的业务逻辑
     |_router 路由设置目录
+    |_subscriber 整合了redis pubsub和nats的消息订阅器，可随系统启动一并运行，也可抽离出来独立运行
     |_util 工具包目录：编写工具包方法，提供基于日志记录的错误处理包，jwt编解码包，业务日志记录包
     |_views 页面模板目录
     |_validator 自定义验证器目录

@@ -1,4 +1,4 @@
-package mq
+package redisMq
 
 import redigo "github.com/garyburd/redigo/redis"
 

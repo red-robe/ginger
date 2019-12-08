@@ -5,18 +5,30 @@ import (
 	"github.com/gofuncchan/ginger/boot"
 	"github.com/gofuncchan/ginger/common"
 	"github.com/gofuncchan/ginger/config"
+	"github.com/gofuncchan/ginger/cron"
 	"github.com/gofuncchan/ginger/logger"
 	ginger_zap_logger "github.com/gofuncchan/ginger/middleware/logger"
 	ginger_zap_recovery "github.com/gofuncchan/ginger/middleware/recovery"
 	"github.com/gofuncchan/ginger/router"
+	"github.com/gofuncchan/ginger/subscriber/natsSub"
+	"github.com/gofuncchan/ginger/subscriber/redisSub"
 	"strconv"
 )
 
 func main() {
-	var err error
-
 	// 系统模块初始化
 	boot.Init()
+
+	var err error
+
+	// redis subscriber 运行
+	go redisSub.Run()
+
+	// nats subscriber 运行
+	go natsSub.Run()
+
+	// cron 运行
+	go cron.Run()
 
 	// 创建一个gin实例
 	engine := gin.New()

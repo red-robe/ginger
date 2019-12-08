@@ -5,20 +5,15 @@ redisMq:
   dbAuth: FALSE     #是否开启鉴权
   dbPasswd: 123456  #鉴权密码
   maxActive: 0      #最大活动链接数。0为无限
-  maxIdle: 50       #最大闲置链接数，0为无限
-  idleTimeout: 60   #闲置链接超时时间
+  maxIdle: 0       #最大闲置链接数，0为无限
+  idleTimeout: 0   #闲置链接超时时间
 natsMq:
   switch: false     #natsMq开关
-  natsServers:
+  natsServer:
     -
       host: ""      #nats-server的主机地址
       port: 0       #nats-server的服务端口
       authSwitch:   false     #是否开启鉴权
       userName: ""  #鉴权用户名
       password: ""  #鉴权密码
-    -
-      host: ""      #nats-server的主机地址
-      port: 0       #nats-server的服务端口
-      authSwitch:   false     #是否开启鉴权
-      userName: ""  #鉴权用户名
-      password: ""  #鉴权密码
+

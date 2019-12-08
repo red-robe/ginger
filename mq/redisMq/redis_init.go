@@ -1,4 +1,4 @@
-package mq
+package redisMq
 
 import (
 	"fmt"
@@ -16,8 +16,7 @@ Tips：原则上用于缓存的redis机器与用于pubsub的redis机器分开较
 */
 var redisMqPoolPtr *redigo.Pool
 
-
-func redisMqInit() {
+func RedisMqInit() {
 	// 配置并获得一个连接池对象的指针
 	redisMqPoolPtr = &redigo.Pool{
 		// 最大活动链接数。0为无限
@@ -29,7 +28,7 @@ func redisMqInit() {
 		// 连接池的连接拨号
 		Dial: func() (redigo.Conn, error) {
 			// 连接
-			redisAddr := config.MqConf.RedisMq.DbHost + ":" + strconv.Itoa(int(config.MqConf.RedisMq.DbPort))
+			redisAddr := config.MqConf.RedisMq.DbHost + ":" + strconv.Itoa(config.MqConf.RedisMq.DbPort)
 			conn, err := redigo.Dial("tcp", redisAddr)
 			if err != nil {
 				fmt.Println("redis dial fatal:", err.Error())
@@ -62,11 +61,11 @@ func redisMqInit() {
 	// 一般启动后不关闭连接池
 	// defer poolPtr.Close()
 
-	RedisMq = new(RedisPubSub)
-	fmt.Println("Redis PubSub init ready!")
+	fmt.Println("Redis PubSub Connect ready!")
 
+	// Redis List实现的消息队列全局引用
 	RedisQueue = GetRedisList(GetRedisConn())
-	fmt.Println("Redis List Queue init ready!")
+	fmt.Println("Redis List Queue Connect ready!")
 
 }
 
@@ -77,8 +76,8 @@ func GetRedisConn() redigo.Conn {
 }
 
 // 从Redis连接池获取一个PubSub连接
-func GetRedisPubSubConn() redigo.PubSubConn {
+func GetRedisPubSubConn() *redigo.PubSubConn {
 	conn := redisMqPoolPtr.Get()
 	psConn := redigo.PubSubConn{Conn: conn}
-	return psConn
+	return &psConn
 }

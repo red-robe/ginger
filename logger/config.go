@@ -23,5 +23,6 @@ func encoderConfig() zapcore.EncoderConfig {
 }
 
 func timeEncoder(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
-	enc.AppendString(t.Format("2019-01-01 00:00:00.000"))
+	enc.AppendString(t.Format("2006-01-02 15:04:05"))
 }
+
