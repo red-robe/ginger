@@ -14,6 +14,8 @@ Ginger 是一个构建gin应用的脚手架。
 - 整合sql builder方式的dao层，给不喜欢orm和原生sql的程序猿一条生路；
 - 整合mgo三方库的连接池及简易调用方法；
 - 整合redigo三方库的连接池及简易调用方法、管道调用方法；
+- 整合基于robfig/cron/v3的定时任务
+- 整合redis pubsub 和nats 消息中间件
 - 提供通用的utils工具包
 - 使用ginger-cli客户端生成通用代码，轻松搭建gin应用
 
