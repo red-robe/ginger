@@ -45,22 +45,6 @@ func CreateUserByPhone(name, phone, passwd, salt string) int64 {
 	return id
 }
 
-// 三方登录创建用户
-func CreateUserByOauth2(name, avatar string) int64 {
-	var data []map[string]interface{}
-	data = append(data, map[string]interface{}{
-		"name":      name,
-		"avatar":    avatar,
-		"create_at": time.Now(),
-		"update_at": time.Now(),
-	})
-
-	id, err := mysql.Insert(schema.UserOauth2TableName, data)
-	if !e.Em(err) {
-		return -1
-	}
-	return id
-}
 
 // 更新用户信息
 func UpdateUserInfo(id int, data map[string]interface{}) bool {
@@ -79,7 +63,7 @@ func GetUserInfoById(id int64) *schema.User {
 		"id": id,
 	}
 	userResult := new(schema.User)
-	err := mysql.GetOne(schema.UserTableName, where, userResult)
+	err := mysql.GetOne(schema.UserTableName, where, nil,userResult)
 	if !e.Em(err) {
 		return nil
 	}
@@ -92,7 +76,7 @@ func GetUserInfoByEmail(email string) *schema.User {
 		"email": email,
 	}
 	userResult := new(schema.User)
-	err := mysql.GetOne(schema.UserTableName, where, userResult)
+	err := mysql.GetOne(schema.UserTableName, where, nil,userResult)
 	if !e.Em(err) {
 		return nil
 	}
@@ -105,7 +89,7 @@ func GetUserInfoByPhone(phone string) *schema.User {
 		"phone": phone,
 	}
 	userResult := new(schema.User)
-	err := mysql.GetOne(schema.UserTableName, where, userResult)
+	err := mysql.GetOne(schema.UserTableName, where, nil,userResult)
 	if !e.Em(err) {
 		return nil
 	}

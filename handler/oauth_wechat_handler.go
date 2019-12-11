@@ -4,11 +4,11 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gofuncchan/ginger/cache"
 	"github.com/gofuncchan/ginger/common"
-	"github.com/gofuncchan/ginger/model/userModel"
 	"github.com/gofuncchan/ginger/model/userOauthModel"
 	"github.com/gofuncchan/ginger/oauth2"
 	"github.com/gofuncchan/ginger/util/e"
 	"github.com/gofuncchan/ginger/util/jwt"
+	"github.com/pkg/errors"
 	"strconv"
 )
 
@@ -60,47 +60,55 @@ func WechatSignIn(c *gin.Context) {
 	userInfo := oauth2.WechatOAuth2Manager.Authorize(form.Code)
 
 	// 已获取到三方平台用户信息，进入鉴权流程
-	info := userOauthModel.GetUserOauthInfo(userInfo.UserInfo.OpenId, userInfo.UserInfo.UnionId, userOauthModel.WechatPlatform)
+	info, err := userOauthModel.GetUserOauthInfo(userInfo.UserInfo.OpenId, userInfo.UserInfo.UnionId, userOauthModel.WechatPlatform)
+	if err != nil {
+		common.ResponseServerError(c, errors.New("wechat oauth2 login error"))
+		return
+	}
+	var userClaim jwt.TokenUserClaim
+	var userKey string
 	if info != nil {
 		// 该三方账号已经注册过，走登录流程，获取用户信息，生成TokenString返回
 		userInfo := userOauthModel.GetUserInfoByUserOauthId(int64(info.ID))
+		if userInfo == nil {
+			common.ResponseServerError(c, errors.New("wechat oauth2 login error"))
+			return
+		}
 
 		// 创建登录token并返回
-		userClaim := jwt.TokenUserClaim{
+		userClaim = jwt.TokenUserClaim{
 			Id:     int64(userInfo.ID),
 			Name:   userInfo.Name,
 			Avatar: userInfo.Avatar,
 		}
 
-		tkStr, err := jwt.JwtService.Encode(userClaim)
-		e.Eh(err)
+		userKey = cache.UserTokenCacheKeyPrefix + strconv.Itoa(int(userInfo.ID))
 
-		// Redis存储token保存登录状态
-		userKey := cache.UserTokenCacheKeyPrefix + strconv.Itoa(int(userInfo.ID))
-		cache.SetToken(userKey, tkStr)
-
-		common.ResponseOk(c, gin.H{"token": tkStr})
-		return
 	} else {
 		// 该三方账号未注册，走注册流程，新增用户信息，生成TokenString返回
-		userId := userModel.CreateUserByOauth2(info.NickName, info.AvatarURL)
-		_ = userOauthModel.CreateUserByOauth2(info.NickName, info.AvatarURL, info.AccessToken, info.OpenID, info.UnionID, int64(info.Gender), userId, userOauthModel.WechatPlatform)
-
+		userId := userOauthModel.CreateUserByOauth2UserInfo(info.NickName, info.AvatarURL, info.AccessToken, info.OpenID, info.UnionID, int64(info.Gender), userOauthModel.WechatPlatform)
+		if userId < 0 {
+			common.ResponseServerError(c, errors.New("register user info error"))
+			return
+		}
 		// 创建登录token并返回
-		userClaim := jwt.TokenUserClaim{
+		userClaim = jwt.TokenUserClaim{
 			Id:     userId,
 			Name:   info.NickName,
 			Avatar: info.AvatarURL,
 		}
-		tkStr, err := jwt.JwtService.Encode(userClaim)
-		e.Eh(err)
-
-		// Redis存储token保存登录状态
-		userKey := cache.UserTokenCacheKeyPrefix + strconv.Itoa(int(userId))
-		cache.SetToken(userKey, tkStr)
-
-		common.ResponseOk(c, gin.H{"token": tkStr})
-		return
+		userKey = cache.UserTokenCacheKeyPrefix + strconv.Itoa(int(userId))
 
 	}
+
+	tkStr, err := jwt.JwtService.Encode(userClaim)
+	if !e.Eh(err) {
+		common.ResponseServerError(c, errors.New("jwt token string encode error"))
+		return
+	}
+
+	// Redis存储token保存登录状态
+	cache.SetToken(userKey, tkStr)
+
+	common.ResponseOk(c, gin.H{"token": tkStr})
 }

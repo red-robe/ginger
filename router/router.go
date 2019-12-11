@@ -42,7 +42,7 @@ func Router(r *gin.Engine) {
 	// 退出登录
 	r.GET("/signout", auth.AuthMiddleware(), handler.SignOut)
 
-	// 微信三方登录
+	// 三方登录
 	r.GET("oauth2/wechat/signin", handler.WechatSignIn)
 	r.GET("oauth2/qq/signin", handler.QQSignIn)
 	r.GET("oauth2/weibo/signin", handler.WeiboSignIn)

@@ -58,8 +58,10 @@ func SignUp(c *gin.Context) {
 			Avatar: "",
 		}
 		tkStr, err := jwt.JwtService.Encode(userClaim)
-		e.Eh(err)
-
+		if !e.Eh(err) {
+			common.ResponseServerError(c,errors.New("jwt token string encode error"))
+			return
+		}
 		// Redis存储token保存登录状态
 		userKey := cache.UserTokenCacheKeyPrefix + strconv.Itoa(int(id))
 		cache.SetToken(userKey, tkStr)
@@ -114,8 +116,10 @@ func SignIn(c *gin.Context) {
 		}
 
 		tkStr, err := jwt.JwtService.Encode(userClaim)
-		e.Eh(err)
-
+		if !e.Eh(err) {
+			common.ResponseServerError(c,errors.New("jwt token string encode error"))
+			return
+		}
 		// Redis存储token保存登录状态
 		userKey := cache.UserTokenCacheKeyPrefix + strconv.Itoa(int(userInfo.ID))
 		cache.SetToken(userKey, tkStr)

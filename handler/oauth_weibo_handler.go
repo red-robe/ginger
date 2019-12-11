@@ -1,15 +1,15 @@
 package handler
 
-import(
-    "github.com/gofuncchan/ginger/cache"
-    "github.com/gofuncchan/ginger/common"
-    "github.com/gin-gonic/gin"
-    "github.com/gofuncchan/ginger/model/userModel"
-    "github.com/gofuncchan/ginger/model/userOauthModel"
-    "github.com/gofuncchan/ginger/oauth2"
-    "github.com/gofuncchan/ginger/util/e"
-    "github.com/gofuncchan/ginger/util/jwt"
-    "strconv"
+import (
+	"errors"
+	"github.com/gin-gonic/gin"
+	"github.com/gofuncchan/ginger/cache"
+	"github.com/gofuncchan/ginger/common"
+	"github.com/gofuncchan/ginger/model/userOauthModel"
+	"github.com/gofuncchan/ginger/oauth2"
+	"github.com/gofuncchan/ginger/util/e"
+	"github.com/gofuncchan/ginger/util/jwt"
+	"strconv"
 )
 
 /*
@@ -47,67 +47,71 @@ https://api.weibo.com/oauth2/authorize?client_id=123050457758183&redirect_uri=ht
 http://www.example.com/response&code=CODE
 */
 
-
 type WeiboSignInParams struct {
-    Code  string `form:"code" binding:"required,gt=0"`
+	Code string `form:"code" binding:"required,gt=0"`
 }
 
 // 获取微博用户授权信息并注册或登录返回Token String
-func WeiboSignIn(c *gin.Context){
-    // validate request params
-    form := new(WeiboSignInParams)
-    if err := c.ShouldBind(form); err != nil {
-        common.ResponseInvalidParam(c,err)
-        return
-    }
+func WeiboSignIn(c *gin.Context) {
+	// validate request params
+	form := new(WeiboSignInParams)
+	if err := c.ShouldBind(form); err != nil {
+		common.ResponseInvalidParam(c, err)
+		return
+	}
 
-    // 使用微博授权码code开始鉴权流程并获取微博用户信息
-    userInfo := oauth2.WeiboOAuth2Manager.Authorize(form.Code)
+	// 使用微博授权码code开始鉴权流程并获取微博用户信息
+	userInfo := oauth2.WeiboOAuth2Manager.Authorize(form.Code)
 
-    // TODO 存入用户信息到用户表
-    // 已获取到三方平台用户信息，进入鉴权流程
-    info := userOauthModel.GetUserOauthInfo(userInfo.UserInfo.OpenId, userInfo.UserInfo.UnionId,userOauthModel.WeiboPlatform)
-    if info != nil {
-        // 该三方账号已经注册过，走登录流程，获取用户信息，生成TokenString返回
-        userInfo := userOauthModel.GetUserInfoByUserOauthId(int64(info.ID))
+	// 已获取到三方平台用户信息，进入鉴权流程
+	info, err := userOauthModel.GetUserOauthInfo(userInfo.UserInfo.OpenId, userInfo.UserInfo.UnionId, userOauthModel.WeiboPlatform)
+	if err != nil {
+		common.ResponseServerError(c, errors.New("wechat oauth2 login error"))
+		return
+	}
+	var userClaim jwt.TokenUserClaim
+	var userKey string
+	if info != nil {
+		// 该三方账号已经注册过，走登录流程，获取用户信息，生成TokenString返回
+		userInfo := userOauthModel.GetUserInfoByUserOauthId(int64(info.ID))
+		if userInfo == nil {
+			common.ResponseServerError(c, errors.New("wechat oauth2 login error"))
+			return
+		}
 
-        // 创建登录token并返回
-        userClaim := jwt.TokenUserClaim{
-            Id:     int64(userInfo.ID),
-            Name:   userInfo.Name,
-            Avatar: userInfo.Avatar,
-        }
+		// 创建登录token并返回
+		userClaim = jwt.TokenUserClaim{
+			Id:     int64(userInfo.ID),
+			Name:   userInfo.Name,
+			Avatar: userInfo.Avatar,
+		}
+		userKey = cache.UserTokenCacheKeyPrefix + strconv.Itoa(int(userInfo.ID))
 
-        tkStr, err := jwt.JwtService.Encode(userClaim)
-        e.Eh(err)
+	} else {
+		// 该三方账号未注册，走注册流程，新增用户信息，生成TokenString返回
+		userId := userOauthModel.CreateUserByOauth2UserInfo(info.NickName, info.AvatarURL, info.AccessToken, info.OpenID, info.UnionID, int64(info.Gender), userOauthModel.WeiboPlatform)
+		if userId < 0 {
+			common.ResponseServerError(c, errors.New("register user info error"))
+			return
+		}
 
-        // Redis存储token保存登录状态
-        userKey := cache.UserTokenCacheKeyPrefix + strconv.Itoa(int(userInfo.ID))
-        cache.SetToken(userKey, tkStr)
+		// 创建登录token并返回
+		userClaim = jwt.TokenUserClaim{
+			Id:     userId,
+			Name:   info.NickName,
+			Avatar: info.AvatarURL,
+		}
+		userKey = cache.UserTokenCacheKeyPrefix + strconv.Itoa(int(userId))
 
-        common.ResponseOk(c, gin.H{"token": tkStr})
-        return
-    } else {
-        // 该三方账号未注册，走注册流程，新增用户信息，生成TokenString返回
-        userId := userModel.CreateUserByOauth2(info.NickName, info.AvatarURL)
-        _ = userOauthModel.CreateUserByOauth2(info.NickName, info.AvatarURL, info.AccessToken, info.OpenID, info.UnionID, int64(info.Gender), userId,userOauthModel.WeiboPlatform)
+	}
 
-        // 创建登录token并返回
-        userClaim := jwt.TokenUserClaim{
-            Id:     userId,
-            Name:   info.NickName,
-            Avatar: info.AvatarURL,
-        }
-        tkStr, err := jwt.JwtService.Encode(userClaim)
-        e.Eh(err)
+	tkStr, err := jwt.JwtService.Encode(userClaim)
+	if !e.Eh(err) {
+		common.ResponseServerError(c, errors.New("jwt token string encode error"))
+		return
+	}
+	// Redis存储token保存登录状态
+	cache.SetToken(userKey, tkStr)
 
-        // Redis存储token保存登录状态
-        userKey := cache.UserTokenCacheKeyPrefix + strconv.Itoa(int(userId))
-        cache.SetToken(userKey, tkStr)
-
-        common.ResponseOk(c, gin.H{"token": tkStr})
-        return
-
-    }
+	common.ResponseOk(c, gin.H{"token": tkStr})
 }
-

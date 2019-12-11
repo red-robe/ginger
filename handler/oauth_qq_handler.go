@@ -1,15 +1,15 @@
 package handler
 
-import(
-    "github.com/gofuncchan/ginger/cache"
-    "github.com/gofuncchan/ginger/common"
-    "github.com/gin-gonic/gin"
-    "github.com/gofuncchan/ginger/model/userModel"
-    "github.com/gofuncchan/ginger/model/userOauthModel"
-    "github.com/gofuncchan/ginger/oauth2"
-    "github.com/gofuncchan/ginger/util/e"
-    "github.com/gofuncchan/ginger/util/jwt"
-    "strconv"
+import (
+	"errors"
+	"github.com/gin-gonic/gin"
+	"github.com/gofuncchan/ginger/cache"
+	"github.com/gofuncchan/ginger/common"
+	"github.com/gofuncchan/ginger/model/userOauthModel"
+	"github.com/gofuncchan/ginger/oauth2"
+	"github.com/gofuncchan/ginger/util/e"
+	"github.com/gofuncchan/ginger/util/jwt"
+	"strconv"
 )
 
 /*
@@ -45,67 +45,71 @@ PC网站：http://graph.qq.com/demo/index.jsp?code=9A5F************************0
 
 */
 type QQSignInParams struct {
-    Code  string `form:"code" binding:"required,gt=0"`
+	Code string `form:"code" binding:"required,gt=0"`
 }
 
 // 获取QQ用户授权信息并注册或登录返回Token String
-func QQSignIn(c *gin.Context){
-    // validate request params
-    form := new(QQSignInParams)
-    if err := c.ShouldBind(form); err != nil {
-        common.ResponseInvalidParam(c,err)
-        return
-    }
+func QQSignIn(c *gin.Context) {
+	// validate request params
+	form := new(QQSignInParams)
+	if err := c.ShouldBind(form); err != nil {
+		common.ResponseInvalidParam(c, err)
+		return
+	}
 
+	// 使用qq回调授权码code开始鉴权流程并获取QQ用户信息
+	userInfo := oauth2.QQOAuth2Manager.Authorize(form.Code)
 
-    // 使用qq回调授权码code开始鉴权流程并获取QQ用户信息
-    userInfo := oauth2.QQOAuth2Manager.Authorize(form.Code)
+	// 已获取到三方平台用户信息，进入鉴权流程
+	info, err := userOauthModel.GetUserOauthInfo(userInfo.UserInfo.OpenId, userInfo.UserInfo.UnionId, userOauthModel.QQPlatform)
+	if err != nil {
+		common.ResponseServerError(c, errors.New("wechat oauth2 login error"))
+		return
+	}
+	var userClaim jwt.TokenUserClaim
+	var userKey string
+	if info != nil {
+		// 该三方账号已经注册过，走登录流程，获取用户信息，生成TokenString返回
+		userInfo := userOauthModel.GetUserInfoByUserOauthId(int64(info.ID))
+		if userInfo == nil {
+			common.ResponseServerError(c, errors.New("wechat oauth2 login error"))
+			return
+		}
 
+		// 创建登录token并返回
+		userClaim = jwt.TokenUserClaim{
+			Id:     int64(userInfo.ID),
+			Name:   userInfo.Name,
+			Avatar: userInfo.Avatar,
+		}
+		userKey = cache.UserTokenCacheKeyPrefix + strconv.Itoa(int(userInfo.ID))
 
-    // TODO 存入用户信息到用户表
-    // 已获取到三方平台用户信息，进入鉴权流程
-    info := userOauthModel.GetUserOauthInfo(userInfo.UserInfo.OpenId, userInfo.UserInfo.UnionId,userOauthModel.QQPlatform)
-    if info != nil {
-        // 该三方账号已经注册过，走登录流程，获取用户信息，生成TokenString返回
-        userInfo := userOauthModel.GetUserInfoByUserOauthId(int64(info.ID))
+	} else {
+		// 该三方账号未注册，走注册流程，新增用户信息，生成TokenString返回
+		userId := userOauthModel.CreateUserByOauth2UserInfo(info.NickName, info.AvatarURL, info.AccessToken, info.OpenID, info.UnionID, int64(info.Gender), userOauthModel.QQPlatform)
+		if userId < 0 {
+			common.ResponseServerError(c, errors.New("register user info error"))
+			return
+		}
 
-        // 创建登录token并返回
-        userClaim := jwt.TokenUserClaim{
-            Id:     int64(userInfo.ID),
-            Name:   userInfo.Name,
-            Avatar: userInfo.Avatar,
-        }
+		// 创建登录token并返回
+		userClaim = jwt.TokenUserClaim{
+			Id:     userId,
+			Name:   info.NickName,
+			Avatar: info.AvatarURL,
+		}
+		userKey = cache.UserTokenCacheKeyPrefix + strconv.Itoa(int(userId))
 
-        tkStr, err := jwt.JwtService.Encode(userClaim)
-        e.Eh(err)
+	}
 
-        // Redis存储token保存登录状态
-        userKey := cache.UserTokenCacheKeyPrefix + strconv.Itoa(int(userInfo.ID))
-        cache.SetToken(userKey, tkStr)
+	tkStr, err := jwt.JwtService.Encode(userClaim)
+	if !e.Eh(err) {
+		common.ResponseServerError(c, errors.New("jwt token string encode error"))
+		return
+	}
+	// Redis存储token保存登录状态
+	cache.SetToken(userKey, tkStr)
 
-        common.ResponseOk(c, gin.H{"token": tkStr})
-        return
-    } else {
-        // 该三方账号未注册，走注册流程，新增用户信息，生成TokenString返回
-        userId := userModel.CreateUserByOauth2(info.NickName, info.AvatarURL)
-        _ = userOauthModel.CreateUserByOauth2(info.NickName, info.AvatarURL, info.AccessToken, info.OpenID, info.UnionID, int64(info.Gender), userId,userOauthModel.QQPlatform)
-
-        // 创建登录token并返回
-        userClaim := jwt.TokenUserClaim{
-            Id:     userId,
-            Name:   info.NickName,
-            Avatar: info.AvatarURL,
-        }
-        tkStr, err := jwt.JwtService.Encode(userClaim)
-        e.Eh(err)
-
-        // Redis存储token保存登录状态
-        userKey := cache.UserTokenCacheKeyPrefix + strconv.Itoa(int(userId))
-        cache.SetToken(userKey, tkStr)
-
-        common.ResponseOk(c, gin.H{"token": tkStr})
-        return
-
-    }
+	common.ResponseOk(c, gin.H{"token": tkStr})
+	return
 }
-
