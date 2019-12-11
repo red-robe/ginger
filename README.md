@@ -16,6 +16,7 @@ Ginger 是一个构建gin应用的脚手架。
 - 整合redigo三方库的连接池及简易调用方法、管道调用方法；
 - 整合基于robfig/cron/v3的定时任务
 - 整合redis pubsub 和nats 消息中间件
+- 整合微信、QQ、微博三方登录工具包
 - 提供通用的utils工具包
 - 使用ginger-cli客户端生成通用代码，轻松搭建gin应用
 
@@ -34,10 +35,10 @@ Ginger 是一个构建gin应用的脚手架。
         |_test 存放测试环境配置文件
     |_cron 定时任务代码目录
     |_dao 数据访问层目录
-            |_mysql 该目录实现mysql连接池初始化，以及自动生成的基于sql builder基本数据库表curd
-            |_redis 该目录实现redis连接池初始化，以及通用的redis访问方法R()；
-            |_mongodb 该目录实现mongodb连接池初始化，以及通用的mongodb访问方法M()；
-            |_...
+        |_mysql 该目录实现mysql连接池初始化，以及自动生成的基于sql builder基本数据库表struct,提供基本的curd方法；
+        |_redis 该目录实现redis连接池初始化，以及通用的redis访问方法R()；
+        |_mongodb 该目录实现mongodb连接池初始化，以及通用的mongodb访问方法M()；
+        |_...
     |_handler 业务处理函数目录
     |_logger 实现基于zap的日志记录器
     |_middleware 中间件目录
@@ -58,7 +59,7 @@ https://github.com/gofuncchan/ginger-cli
 
 - init 初始化项目目录
 - handler 生成基本的handler代码
-- dao 整合gingger-forge工具，生成go struct和curd代码
+- mysql schema 整合gingger-forge工具，生成go struct代码
 - config 根据yaml文件生成go的解析代码
 - repo 生成基于mongodb的repository相关代码
 - model 生成基于mysql的业务数据模型相关代码

@@ -10,6 +10,7 @@ import (
 	"github.com/gofuncchan/ginger/dao/redis"
 	"github.com/gofuncchan/ginger/logger"
 	"github.com/gofuncchan/ginger/mq"
+	"github.com/gofuncchan/ginger/oauth2"
 	"github.com/gofuncchan/ginger/util/jwt"
 	"io/ioutil"
 	"os"
@@ -25,6 +26,9 @@ func Init() {
 
 	// 初始化zap日志
 	logger.Init()
+
+	// 初始化三方登录管理器
+	oauth2.InitOAuth2Manager()
 
 	// 消息中间件初始化
 	mq.Init()

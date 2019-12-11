@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gofuncchan/ginger/cache"
 	"github.com/gofuncchan/ginger/common"
-	"github.com/gofuncchan/ginger/model"
+	"github.com/gofuncchan/ginger/model/userModel"
 	"github.com/gofuncchan/ginger/util/e"
 	"github.com/gofuncchan/ginger/util/jwt"
 	"github.com/gofuncchan/ginger/util/logger"
@@ -43,7 +43,7 @@ func SignUp(c *gin.Context) {
 		// 密码哈希计算
 		passHash, salt := common.GenPassHash(form.Password)
 		// 创建用户
-		id := model.CreateUserByEmail(form.Name, form.Email, passHash, salt)
+		id := userModel.CreateUserByEmail(form.Name, form.Email, passHash, salt)
 		if id == -1 {
 			err := errors.New("register error,please try again")
 			logger.WarmLog(err.Error())
@@ -53,15 +53,15 @@ func SignUp(c *gin.Context) {
 
 		// 创建登录token并返回
 		userClaim := jwt.TokenUserClaim{
-			Id:    id,
-			Name:  form.Name,
-			Email: form.Email,
+			Id:     id,
+			Name:   form.Name,
+			Avatar: "",
 		}
 		tkStr, err := jwt.JwtService.Encode(userClaim)
 		e.Eh(err)
 
 		// Redis存储token保存登录状态
-		userKey := "user_token_" + strconv.Itoa(int(id))
+		userKey := cache.UserTokenCacheKeyPrefix + strconv.Itoa(int(id))
 		cache.SetToken(userKey, tkStr)
 
 		common.ResponseOk(c, gin.H{"token": tkStr})
@@ -97,7 +97,7 @@ func SignIn(c *gin.Context) {
 
 		// 与数据库账号密码鉴权
 		// 1.根据邮箱获取哈希密码与盐值
-		userInfo := model.GetUserInfoByEmail(form.Email)
+		userInfo := userModel.GetUserInfoByEmail(form.Email)
 		// 2.将用户密码与盐值哈希计算并与数据库密码进行比较
 		b := common.IsValidPasswd(form.PassWord, userInfo.Salt, userInfo.Password)
 		if !b {
@@ -108,16 +108,16 @@ func SignIn(c *gin.Context) {
 		// 校验成功则生成token并返回
 		// 创建登录token并返回
 		userClaim := jwt.TokenUserClaim{
-			Id:    int64(userInfo.ID),
-			Name:  userInfo.Name,
-			Email: userInfo.Email,
+			Id:     int64(userInfo.ID),
+			Name:   userInfo.Name,
+			Avatar: userInfo.Avatar,
 		}
 
 		tkStr, err := jwt.JwtService.Encode(userClaim)
 		e.Eh(err)
 
 		// Redis存储token保存登录状态
-		userKey := "user_token_" + strconv.Itoa(int(userInfo.ID))
+		userKey := cache.UserTokenCacheKeyPrefix + strconv.Itoa(int(userInfo.ID))
 		cache.SetToken(userKey, tkStr)
 
 		common.ResponseOk(c, gin.H{"token": tkStr})

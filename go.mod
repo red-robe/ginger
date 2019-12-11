@@ -3,12 +3,16 @@ module github.com/gofuncchan/ginger
 go 1.12
 
 require (
+	github.com/Pallinder/go-randomdata v1.2.0 // indirect
+	github.com/bwmarrin/snowflake v0.3.0 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/didi/gendry v1.3.1
 	github.com/fastly/go-utils v0.0.0-20180712184237-d95a45783239 // indirect
 	github.com/garyburd/redigo v1.6.0
 	github.com/gin-gonic/gin v1.4.0
 	github.com/go-sql-driver/mysql v1.4.1
+	github.com/gofuncchan/util v0.0.0-20191126164950-dd6747bf506d
+	github.com/imroc/req v0.2.4
 	github.com/jehiah/go-strftime v0.0.0-20171201141054-1d33003b3869 // indirect
 	github.com/jonboulle/clockwork v0.1.0 // indirect
 	github.com/json-iterator/go v1.1.6
@@ -17,6 +21,7 @@ require (
 	github.com/nats-io/nats-server/v2 v2.1.2 // indirect
 	github.com/nats-io/nats.go v1.9.1
 	github.com/robfig/cron/v3 v3.0.0
+	github.com/satori/go.uuid v1.2.0 // indirect
 	github.com/tebeka/strftime v0.1.3 // indirect
 	go.uber.org/zap v1.10.0
 	google.golang.org/appengine v0.0.0-00010101000000-000000000000 // indirect

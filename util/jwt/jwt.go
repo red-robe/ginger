@@ -27,9 +27,9 @@ var JwtService *TokenService
 
 // JWT中携带的用户个人信息
 type TokenUserClaim struct {
-	Id    int64  `json:id`
-	Name  string `json:name`
-	Email string `json:email`
+	Id     int64  `json:id`
+	Name   string `json:name`
+	Avatar string `json:avatar`
 }
 
 // 聚合jwt内部实现的Claims
