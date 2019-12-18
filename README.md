@@ -53,19 +53,19 @@ Ginger 是一个构建gin应用的脚手架。
 
 
 #### 工具
-##### ginger-cli
+##### ginger-gen
 脚手架代码生成工具
-https://github.com/gofuncchan/ginger-cli
+https://github.com/gofuncchan/ginger-gen
 
 - init 初始化项目目录
 - handler 生成基本的handler代码
-- mysql schema 整合gingger-forge工具，生成go struct代码
+- mysql schema 生成go struct代码
 - config 根据yaml文件生成go的解析代码
 - repo 生成基于mongodb的repository相关代码
 - model 生成基于mysql的业务数据模型相关代码
 - cache 生成基于redis的缓存操作代码
 
-##### gingger-forge
+##### ginger-forge
 基于didi/gendry的dao代码生成工具
 https://github.com/gofuncchan/ginger-forge
 
