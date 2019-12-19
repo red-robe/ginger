@@ -6,20 +6,23 @@ import (
 	"io/ioutil"
 )
 
+// 基础配置
 type Base struct {
 	Env        string `yaml:"env"`
 	ListenPort int64  `yaml:"listen"`
 }
 
+// 日志配置
 type Log struct {
 	LogDir                     string `yaml:"logDir"`
 	LogMaxDayCount             int    `yaml:"maxDayCount"`
-	LogMongoHookSwitch             bool   `yaml:"logMongoHookSwitch"`
+	LogMongoHookSwitch         bool   `yaml:"logMongoHookSwitch"`
 	LogMongoCollection         string `yaml:"logMongoCol"`
 	LogMongoExpireAfterSeconds int    `yaml:"logMongoExpire"`
 	WithRotationTime           int    `yaml:"withRotationTime"`
 }
 
+// MysqlDB 配置
 type Mysql struct {
 	DbHost                  string `yaml:"dbHost"`
 	DbPort                  int64  `yaml:"dbPort"`
@@ -38,6 +41,7 @@ type Mysql struct {
 	PING                    bool   `yaml:"ping"`
 }
 
+// RedisDB配置
 type Redis struct {
 	DbHost      string `yaml:"dbHost"`
 	DbPort      int64  `yaml:"dbPort"`
@@ -48,58 +52,71 @@ type Redis struct {
 	IdleTimeout int64  `yaml:"idleTimeout"`
 }
 
-type Mongodb struct{
-	DbHosts []string `yaml:"dbHosts"`
-	DbPorts []int `yaml:"dbPorts"`
-	DbUser string `yaml:"dbUser"`
-	DbPasswd string `yaml:"dbPasswd"`
-	DbName string `yaml:"dbName"`
+// MongoDB 配置
+type Mongodb struct {
+	DbHosts  []string `yaml:"dbHosts"`
+	DbPorts  []int    `yaml:"dbPorts"`
+	DbUser   string   `yaml:"dbUser"`
+	DbPasswd string   `yaml:"dbPasswd"`
+	DbName   string   `yaml:"dbName"`
 }
 
-
-
-type Mq struct{
+// 消息系统配置
+type Mq struct {
 	RedisMq `yaml:"redisMq"`
-	NatsMq `yaml:"natsMq"`
+	NatsMq  `yaml:"natsMq"`
 }
 
-type RedisMq struct{
-	Switch bool `yaml:"switch"`
-	MaxActive int `yaml:"maxActive"`
-	MaxIdle int `yaml:"maxIdle"`
-	IdleTimeout int `yaml:"idleTimeout"`
-	DbHost string `yaml:"dbHost"`
-	DbPort int `yaml:"dbPort"`
-	DbAuth bool `yaml:"dbAuth"`
-	DbPasswd int `yaml:"dbPasswd"`
-
+// Redis Pubsub 消息系统
+type RedisMq struct {
+	Switch      bool   `yaml:"switch"`
+	MaxActive   int    `yaml:"maxActive"`
+	MaxIdle     int    `yaml:"maxIdle"`
+	IdleTimeout int    `yaml:"idleTimeout"`
+	DbHost      string `yaml:"dbHost"`
+	DbPort      int    `yaml:"dbPort"`
+	DbAuth      bool   `yaml:"dbAuth"`
+	DbPasswd    int    `yaml:"dbPasswd"`
 }
 
-type NatsMq struct{
-	Switch bool `yaml:"switch"`
+// Nats Mq 消息系统
+type NatsMq struct {
+	Switch      bool         `yaml:"switch"`
 	NatsServers []NatsServer `yaml:"natsServer"`
 }
 
+// 可配集群
 type NatsServer struct {
-	Host string `yaml:"host"`
-	Port int	`yaml:"port"`
-	AuthSwitch bool `yaml:"authSwitch"`
-	UserName string `yaml:"userName"`
-	Password string `yaml:"password"`
+	Host       string `yaml:"host"`
+	Port       int    `yaml:"port"`
+	AuthSwitch bool   `yaml:"authSwitch"`
+	UserName   string `yaml:"userName"`
+	Password   string `yaml:"password"`
 }
 
+// Cors配置
+type Cors struct {
+	AllowHeaders     []string `yaml:"AllowHeaders"`
+	AllowCredentials bool     `yaml:"AllowCredentials"`
+	ExposeHeaders    []string `yaml:"ExposeHeaders"`
+	MaxAge           int      `yaml:"MaxAge"`
+	AllowAllOrigins  bool     `yaml:"AllowAllOrigins"`
+	AllowOrigins     []string `yaml:"AllowOrigins"`
+	AllowMethods     []string `yaml:"AllowMethods"`
+}
 
 var (
-	BaseConf  Base
-	LogConf   Log
-	MysqlConf Mysql
-	RedisConf Redis
-	MongoConf Mongodb
-	MqConf Mq
+	BaseConf  *Base
+	LogConf   *Log
+	MysqlConf *Mysql
+	RedisConf *Redis
+	MongoConf *Mongodb
+	MqConf    *Mq
+	CorsConf  *Cors
 )
 
 // 动态参数配置项，编译后可携yaml配置文件启动
-func Init(confPath string){
+func Init(confPath string) {
 
 	baseConfFile, err := ioutil.ReadFile(confPath + "/base.yaml")
 	common.EF(err)
@@ -131,5 +148,9 @@ func Init(confPath string){
 	err = yaml.Unmarshal(MqConfFile, &MqConf)
 	common.EF(err)
 
+	CorsConfFile, err := ioutil.ReadFile(confPath + "/cors.yaml")
+	common.EF(err)
+	err = yaml.Unmarshal(CorsConfFile, &CorsConf)
+	common.EF(err)
 
 }

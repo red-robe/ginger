@@ -7,6 +7,7 @@ import (
 	"github.com/gofuncchan/ginger/config"
 	"github.com/gofuncchan/ginger/cron"
 	"github.com/gofuncchan/ginger/logger"
+	"github.com/gofuncchan/ginger/middleware/cors"
 	ginger_zap_logger "github.com/gofuncchan/ginger/middleware/logger"
 	ginger_zap_recovery "github.com/gofuncchan/ginger/middleware/recovery"
 	"github.com/gofuncchan/ginger/router"
@@ -32,6 +33,8 @@ func main() {
 
 	// 创建一个gin实例
 	engine := gin.New()
+
+	engine.Use(cors.CORSMiddleware())
 
 	// zap 日志库
 	// zapLogger, _ := zap.NewProduction() //使用默认生存环境配置
