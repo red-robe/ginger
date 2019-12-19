@@ -18,7 +18,7 @@ Ginger 是一个构建gin应用的脚手架。
 - 整合redis pubsub 和nats 消息中间件
 - 整合微信、QQ、微博三方登录工具包
 - 提供通用的utils工具包
-- 使用ginger-cli客户端生成通用代码，轻松搭建gin应用
+- 使用ginger-gen客户端生成通用代码，轻松搭建gin应用
 
 
 #### 目录结构
@@ -87,17 +87,17 @@ https://github.com/gofuncchan/ginger-forge
 
     `go run main.go`
 
-##### 方式二：使用ginger-cli工具
+##### 方式二：使用ginger-gen工具
 
 - 安装工具:
 
-    `go get -u github.com/gofuncchan/ginger-cli`
+    `go get -u github.com/gofuncchan/ginger-gen`
     
 - 初始化项目:
 
     请确保你的$GOPATH/bin已设置到全局变量$PATH,切换到你的代码目录，执行init命令，会在你的代码目录创建项目脚手架
     
-    `ginger-cli init {your project name} [-g]`
+    `ginger-gen init {your project name} [-g]`
     
 - 在/config目录下重置或新增配置项，并解析到全局变量
 
