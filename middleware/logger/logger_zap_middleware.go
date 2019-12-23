@@ -14,6 +14,8 @@ func GingerWithZap(logger *zap.Logger) gin.HandlerFunc {
 		path := c.Request.URL.Path
 		query := c.Request.URL.RawQuery
 		postForm := c.Request.PostForm.Encode()
+		var reqBody []byte
+		_ ,_= c.Request.Body.Read(reqBody)
 
 		c.Next()
 
@@ -32,6 +34,7 @@ func GingerWithZap(logger *zap.Logger) gin.HandlerFunc {
 				zap.String("path", path),
 				zap.String("query", query),
 				zap.String("post", postForm),
+				zap.String("body", string(reqBody)),
 				// zap.String("trace_id", traceId),
 			)
 		}

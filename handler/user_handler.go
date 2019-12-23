@@ -2,7 +2,6 @@ package handler
 
 import (
 	"errors"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gofuncchan/ginger/cache"
 	"github.com/gofuncchan/ginger/common"
@@ -20,10 +19,10 @@ import (
 注册处理,默认邮箱注册
 */
 type SignUpForm struct {
-	Name       string `form:"name" binding:"required"`
-	Email      string `form:"email" binding:"required,email"`
-	Password   string `form:"password" binding:"required,alphanum"`
-	RePassword string `form:"re_password" binding:"required,eqfield=Password"`
+	Name       string `json:"name" binding:"required"`
+	Email      string `json:"email" binding:"required,email"`
+	Password   string `json:"password" binding:"required,alphanum"`
+	RePassword string `json:"re_password" binding:"required,eqfield=Password"`
 }
 
 func SignUp(c *gin.Context) {
@@ -42,6 +41,14 @@ func SignUp(c *gin.Context) {
 			return
 		}
 
+		// 检查邮箱账号是否已经存在
+		if userModel.IsUserExistByEmail(form.Email) {
+			err := errors.New("user email exist,please try again")
+			logger.WarmLog(err.Error())
+			common.ResponseClientError(c, err)
+			return
+		}
+
 		// 密码哈希计算
 		passHash, salt := common.GenPassHash(form.Password)
 		// 创建用户
@@ -53,23 +60,34 @@ func SignUp(c *gin.Context) {
 			return
 		}
 
-		// 创建登录token并返回
-		userClaim := jwt.TokenUserClaim{
-			Id:     id,
-			Name:   form.Name,
-			Avatar: "",
-		}
-		tkStr, err := jwt.JwtService.Encode(userClaim)
-		if !e.Eh(err) {
-			common.ResponseServerError(c,errors.New("jwt token string encode error"))
-			return
-		}
-		// Redis存储token保存登录状态
-		userKey := cache.UserTokenCacheKeyPrefix + strconv.Itoa(int(id))
-		cache.SetToken(userKey, tkStr)
-
-		common.ResponseOk(c, gin.H{"token": tkStr})
+		// 返回方式一：返回注册结果
+		common.ResponseOk(c,gin.H{"result": true})
 		return
+
+		// 返回方式二：创建登录token并返回
+		// userClaim := jwt.TokenUserClaim{
+		// 	Id:     id,
+		// 	Name:   form.Name,
+		// 	Avatar: "",
+		// }
+		// tkStr, err := jwt.JwtService.Encode(userClaim)
+		// if !e.Eh(err) {
+		// 	common.ResponseServerError(c, errors.New("jwt token string encode error"))
+		// 	return
+		// }
+		// // Redis存储token保存登录状态
+		// userKey := cache.UserTokenCacheKeyPrefix + strconv.Itoa(int(id))
+		// cache.SetToken(userKey, tkStr)
+		//
+		// common.ResponseOk(c,
+		// 	gin.H{
+		// 		"token": tkStr,
+		// 		"user_info": gin.H{
+		// 			"id": id,
+		// 			"name":    form.Name,
+		// 			"avatar":  "",
+		// 		}})
+		// return
 
 	} else {
 		common.ResponseMethodNotAllowed(c, errors.New("only allow GET Or POST method"))
@@ -81,8 +99,8 @@ func SignUp(c *gin.Context) {
 登录处理
 */
 type SignInForm struct {
-	Email    string `form:"email" binding:"required,email"`
-	PassWord string `form:"password" binding:"required,alphanum"`
+	Email    string `json:"email" binding:"required,email"`
+	PassWord string `json:"password" binding:"required,alphanum"`
 }
 
 func SignIn(c *gin.Context) {
@@ -102,6 +120,10 @@ func SignIn(c *gin.Context) {
 		// 与数据库账号密码鉴权
 		// 1.根据邮箱获取哈希密码与盐值
 		userInfo := userModel.GetUserInfoByEmail(form.Email)
+		if userInfo == nil {
+			common.CommonResponse(c, common.ResponseCodeUnAuthorized, http.StatusForbidden, nil, errors.New("email Or password error,please try again"))
+			return
+		}
 		// 2.将用户密码与盐值哈希计算并与数据库密码进行比较
 		b := common.IsValidPasswd(form.PassWord, userInfo.Salt, userInfo.Password)
 		if !b {
@@ -119,14 +141,21 @@ func SignIn(c *gin.Context) {
 
 		tkStr, err := jwt.JwtService.Encode(userClaim)
 		if !e.Eh(err) {
-			common.ResponseServerError(c,errors.New("jwt token string encode error"))
+			common.ResponseServerError(c, errors.New("jwt token string encode error"))
 			return
 		}
 		// Redis存储token保存登录状态
 		userKey := cache.UserTokenCacheKeyPrefix + strconv.Itoa(int(userInfo.ID))
 		cache.SetToken(userKey, tkStr)
 
-		common.ResponseOk(c, gin.H{"token": tkStr})
+		common.ResponseOk(c,
+			gin.H{
+				"token": tkStr,
+				"user_info": gin.H{
+					"id": int64(userInfo.ID),
+					"name":    userInfo.Name,
+					"avatar":  userInfo.Avatar,
+				}})
 		return
 
 	} else {
@@ -140,9 +169,8 @@ func SignIn(c *gin.Context) {
 */
 func SignOut(c *gin.Context) {
 	// 从header获取token字段，在redis删除键
-	tkStr := c.GetHeader("token")
-
-	fmt.Println(tkStr)
+	tkStr := c.GetHeader("Authorization")
+	// fmt.Println(tkStr)
 
 	// 解码获取id
 	claim, err := jwt.JwtService.Decode(tkStr)
@@ -151,7 +179,7 @@ func SignOut(c *gin.Context) {
 		return
 	}
 
-	key := "user_token_" + strconv.Itoa(int(claim.TokenUserClaim.Id))
+	key := cache.UserTokenCacheKeyPrefix +  strconv.Itoa(int(claim.TokenUserClaim.Id))
 	delCount := cache.DeleteToken(key)
 
 	if delCount > 0 {

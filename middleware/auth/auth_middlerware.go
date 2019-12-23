@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gofuncchan/ginger/cache"
 	"github.com/gofuncchan/ginger/util/jwt"
@@ -14,8 +15,8 @@ func AuthMiddleware() gin.HandlerFunc {
 
 		// 从http头获取token string
 
-		tkStr := c.GetHeader("token")
-
+		tkStr := c.GetHeader("Authorization")
+		// fmt.Println("token string:",tkStr)
 		if tkStr == "" {
 			c.Abort()
 			c.JSON(http.StatusUnauthorized, gin.H{
@@ -34,8 +35,10 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
+		fmt.Println("customerClaim:",customerClaim)
+
 		// 在Redis查找token是否存在，不存在或过期则返回-1，还存在则返回token值
-		key := "user_token_" + strconv.Itoa(int(customerClaim.TokenUserClaim.Id))
+		key := cache.UserTokenCacheKeyPrefix + strconv.Itoa(int(customerClaim.TokenUserClaim.Id))
 		token := cache.GetToken(key)
 		// fmt.Println(key)
 		// fmt.Println(tkStr)

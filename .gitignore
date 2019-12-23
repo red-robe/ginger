@@ -22,7 +22,9 @@ go.sum
 
 # zap log
 /log
+loginfo*
 
 # go build binary program
 ginger
-main
+
+
