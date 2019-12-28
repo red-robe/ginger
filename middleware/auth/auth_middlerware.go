@@ -3,7 +3,7 @@ package auth
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/gofuncchan/ginger/cache"
+	"github.com/gofuncchan/ginger/cache/tokenCache"
 	"github.com/gofuncchan/ginger/util/jwt"
 	"net/http"
 	"strconv"
@@ -38,8 +38,8 @@ func AuthMiddleware() gin.HandlerFunc {
 		fmt.Println("customerClaim:",customerClaim)
 
 		// 在Redis查找token是否存在，不存在或过期则返回-1，还存在则返回token值
-		key := cache.UserTokenCacheKeyPrefix + strconv.Itoa(int(customerClaim.TokenUserClaim.Id))
-		token := cache.GetToken(key)
+		key := tokenCache.UserTokenCacheKeyPrefix + strconv.Itoa(int(customerClaim.TokenUserClaim.Id))
+		token := tokenCache.GetToken(key)
 		// fmt.Println(key)
 		// fmt.Println(tkStr)
 

@@ -1,4 +1,4 @@
-package cache
+package oauthStateCache
 
 import (
 	redigo "github.com/garyburd/redigo/redis"

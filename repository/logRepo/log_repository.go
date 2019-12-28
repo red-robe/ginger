@@ -1,4 +1,4 @@
-package repository
+package logRepo
 
 import (
 	"github.com/gofuncchan/ginger/config"

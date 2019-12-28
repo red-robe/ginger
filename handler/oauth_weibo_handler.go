@@ -3,7 +3,7 @@ package handler
 import (
 	"errors"
 	"github.com/gin-gonic/gin"
-	"github.com/gofuncchan/ginger/cache"
+	"github.com/gofuncchan/ginger/cache/tokenCache"
 	"github.com/gofuncchan/ginger/common"
 	"github.com/gofuncchan/ginger/model/userOauthModel"
 	"github.com/gofuncchan/ginger/oauth2"
@@ -85,7 +85,7 @@ func WeiboSignIn(c *gin.Context) {
 			Name:   userInfo.Name,
 			Avatar: userInfo.Avatar,
 		}
-		userKey = cache.UserTokenCacheKeyPrefix + strconv.Itoa(int(userInfo.ID))
+		userKey = tokenCache.UserTokenCacheKeyPrefix + strconv.Itoa(int(userInfo.ID))
 
 	} else {
 		// 该三方账号未注册，走注册流程，新增用户信息，生成TokenString返回
@@ -101,7 +101,7 @@ func WeiboSignIn(c *gin.Context) {
 			Name:   info.NickName,
 			Avatar: info.AvatarURL,
 		}
-		userKey = cache.UserTokenCacheKeyPrefix + strconv.Itoa(int(userId))
+		userKey = tokenCache.UserTokenCacheKeyPrefix + strconv.Itoa(int(userId))
 
 	}
 
@@ -111,7 +111,7 @@ func WeiboSignIn(c *gin.Context) {
 		return
 	}
 	// Redis存储token保存登录状态
-	cache.SetToken(userKey, tkStr)
+	tokenCache.SetToken(userKey, tkStr)
 
 	common.ResponseOk(c, gin.H{"token": tkStr})
 }

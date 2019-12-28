@@ -1,4 +1,4 @@
-package cache
+package tokenCache
 
 import (
 	redigo "github.com/garyburd/redigo/redis"

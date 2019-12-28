@@ -3,7 +3,7 @@ package handler
 import (
 	"errors"
 	"github.com/gin-gonic/gin"
-	"github.com/gofuncchan/ginger/cache"
+	"github.com/gofuncchan/ginger/cache/tokenCache"
 	"github.com/gofuncchan/ginger/common"
 	"github.com/gofuncchan/ginger/model/userModel"
 	"github.com/gofuncchan/ginger/util/e"
@@ -145,8 +145,8 @@ func SignIn(c *gin.Context) {
 			return
 		}
 		// Redis存储token保存登录状态
-		userKey := cache.UserTokenCacheKeyPrefix + strconv.Itoa(int(userInfo.ID))
-		cache.SetToken(userKey, tkStr)
+		userKey := tokenCache.UserTokenCacheKeyPrefix + strconv.Itoa(int(userInfo.ID))
+		tokenCache.SetToken(userKey, tkStr)
 
 		common.ResponseOk(c,
 			gin.H{
@@ -179,8 +179,8 @@ func SignOut(c *gin.Context) {
 		return
 	}
 
-	key := cache.UserTokenCacheKeyPrefix +  strconv.Itoa(int(claim.TokenUserClaim.Id))
-	delCount := cache.DeleteToken(key)
+	key := tokenCache.UserTokenCacheKeyPrefix +  strconv.Itoa(int(claim.TokenUserClaim.Id))
+	delCount := tokenCache.DeleteToken(key)
 
 	if delCount > 0 {
 		common.ResponseOk(c, gin.H{"message": "Sign Out Successful!"})

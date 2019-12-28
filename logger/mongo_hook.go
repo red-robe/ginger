@@ -1,7 +1,7 @@
 package logger
 
 import (
-	"github.com/gofuncchan/ginger/repository"
+	"github.com/gofuncchan/ginger/repository/logRepo"
 	jsoniter "github.com/json-iterator/go"
 	"go.uber.org/zap"
 )
@@ -35,7 +35,7 @@ func (m *MongoLogHook) insertLogToMongo(data []byte) error {
 	// 转为map类型
 	dataMap := object.(map[string]interface{})
 
-	if err := repository.InsertMongoLog(dataMap); err != nil {
+	if err := logRepo.InsertMongoLog(dataMap); err != nil {
 		ZapHookLogger.Error("insert mongo log error", zap.Any("data", dataMap), zap.Error(err))
 		return err
 	}
