@@ -20,9 +20,9 @@ type DaoMysqlSchema interface {
 @param selectField 	[]string				查询选择返回的字段
 @param result 		DaoMysqlSchema			带表结构存储结果的指针，接收返回的数据，实现DaoMysqlSchema接口
 */
-func GetOne(tableName string,where map[string]interface{},selectField []string,result DaoMysqlSchema) error{
+func GetOne(tableName string, where map[string]interface{}, selectField []string, result DaoMysqlSchema) error {
 	if nil == Db {
-		return  errors.New("mysql.DB object couldn't be nil")
+		return errors.New("mysql.DB object couldn't be nil")
 	}
 	condition, values, err := builder.BuildSelect(tableName, where, selectField)
 	if nil != err {
@@ -31,7 +31,7 @@ func GetOne(tableName string,where map[string]interface{},selectField []string,r
 
 	row, err := Db.Query(condition, values...)
 	if nil != err || nil == row {
-		return  err
+		return err
 	}
 	defer row.Close()
 	return scanner.Scan(row, result)
@@ -42,20 +42,20 @@ func GetOne(tableName string,where map[string]interface{},selectField []string,r
 @param tableName 	string					查询的表名
 @param where 		map[string]interface{}	查询条件
 @param selectField 	[]string				查询选择返回的字段
-@param results 		[]DaoMysqlSchema		带表结构存储结果的指针数组，接收返回的数据，实现DaoMysqlSchema接口
+@param results 		interface{}				带表结构存储结果的指针数组，接收返回的数据，接收results应与table schema struct相对应
 */
-func GetMulti(tableName string,where map[string]interface{},selectField []string,results []DaoMysqlSchema) error {
+func GetMulti(tableName string, where map[string]interface{}, selectField []string, results interface{}) error {
 	if nil == Db {
 		return errors.New("mysql.DB object couldn't be nil")
 	}
 	condition, values, err := builder.BuildSelect(tableName, where, selectField)
 	if nil != err {
-		return  err
+		return err
 	}
 
 	rows, err := Db.Query(condition, values...)
 	if nil != err || nil == rows {
-		return  err
+		return err
 	}
 	defer rows.Close()
 	return scanner.Scan(rows, results)
@@ -68,7 +68,7 @@ func GetMulti(tableName string,where map[string]interface{},selectField []string
 
 @return LastInsertId int64						返回最新的插入id
 */
-func Insert(tableName string,data []map[string]interface{}) (int64, error) {
+func Insert(tableName string, data []map[string]interface{}) (int64, error) {
 	if nil == Db {
 		return -1, errors.New("sql.DB object couldn't be nil")
 	}
@@ -90,7 +90,7 @@ func Insert(tableName string,data []map[string]interface{}) (int64, error) {
 
 @return LastInsertId int64						返回最新的插入id
 */
-func InsertIgnore(tableName string,data []map[string]interface{}) (int64, error) {
+func InsertIgnore(tableName string, data []map[string]interface{}) (int64, error) {
 	if nil == Db {
 		return -1, errors.New("sql.DB object couldn't be nil")
 	}
@@ -112,7 +112,7 @@ func InsertIgnore(tableName string,data []map[string]interface{}) (int64, error)
 
 @return LastInsertId int64						返回最新的插入id
 */
-func InsertReplace(tableName string,data []map[string]interface{}) (int64, error) {
+func InsertReplace(tableName string, data []map[string]interface{}) (int64, error) {
 	if nil == Db {
 		return -1, errors.New("sql.DB object couldn't be nil")
 	}
@@ -135,7 +135,7 @@ func InsertReplace(tableName string,data []map[string]interface{}) (int64, error
 
 @return RowsAffected int64						更新影响的行数
 */
-func Update(tableName string,where, data map[string]interface{}) (int64, error) {
+func Update(tableName string, where, data map[string]interface{}) (int64, error) {
 	if nil == Db {
 		return -1, errors.New("sql.DB object couldn't be nil")
 	}
@@ -156,7 +156,7 @@ func Update(tableName string,where, data map[string]interface{}) (int64, error) 
 @param where 		map[string]interface{}		查询条件
 
 @return RowsAffected int64						删除影响的行数
-*/func Delete(tableName string,where map[string]interface{}) (int64, error) {
+*/func Delete(tableName string, where map[string]interface{}) (int64, error) {
 	if nil == Db {
 		return -1, errors.New("sql.DB object couldn't be nil")
 	}
@@ -177,7 +177,7 @@ func Update(tableName string,where, data map[string]interface{}) (int64, error) 
 @param where 		map[string]interface{}		查询条件
 
 @return count 		int64						符合条件的行数
-*/func GetCount(tableName string,where map[string]interface{}) (int64, error) {
+*/func GetCount(tableName string, where map[string]interface{}) (int64, error) {
 	if nil == Db {
 		return -1, errors.New("sql.DB object couldn't be nil")
 	}

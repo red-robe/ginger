@@ -1,14 +1,12 @@
 package handler
 
 import (
-	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/gofuncchan/ginger/cache/tokenCache"
 	"github.com/gofuncchan/ginger/common"
 	"github.com/gofuncchan/ginger/model/userModel"
 	"github.com/gofuncchan/ginger/util/e"
 	"github.com/gofuncchan/ginger/util/jwt"
-	"github.com/gofuncchan/ginger/util/logger"
 	"net/http"
 	"strconv"
 )
@@ -37,15 +35,13 @@ func SignUp(c *gin.Context) {
 		form := new(SignUpForm)
 		// _ = c.Bind(form) //MustBindWith()
 		if err := c.ShouldBind(form); err != nil {
-			common.ResponseInvalidParam(c, err)
+			common.ResponseInvalidParam(c, err.Error())
 			return
 		}
 
 		// 检查邮箱账号是否已经存在
 		if userModel.IsUserExistByEmail(form.Email) {
-			err := errors.New("user email exist,please try again")
-			logger.WarmLog(err.Error())
-			common.ResponseClientError(c, err)
+			common.ResponseClientError(c,"user email exist,please try again")
 			return
 		}
 
@@ -54,14 +50,12 @@ func SignUp(c *gin.Context) {
 		// 创建用户
 		id := userModel.CreateUserByEmail(form.Name, form.Email, passHash, salt)
 		if id == -1 {
-			err := errors.New("register error,please try again")
-			logger.WarmLog(err.Error())
-			common.ResponseServerError(c, err)
+			common.ResponseModelError(c,"account register fail,please try again")
 			return
 		}
 
 		// 返回方式一：返回注册结果
-		common.ResponseOk(c,gin.H{"result": true})
+		common.ResponseOk(c,gin.H{"result": "ok"})
 		return
 
 		// 返回方式二：创建登录token并返回
@@ -90,7 +84,7 @@ func SignUp(c *gin.Context) {
 		// return
 
 	} else {
-		common.ResponseMethodNotAllowed(c, errors.New("only allow GET Or POST method"))
+		common.ResponseMethodNotAllowed(c, "only allow GET Or POST method")
 		return
 	}
 }
@@ -113,7 +107,7 @@ func SignIn(c *gin.Context) {
 		// 请求登录参数验证
 		form := new(SignInForm)
 		if err := c.ShouldBind(form); err != nil {
-			common.ResponseInvalidParam(c, err)
+			common.ResponseInvalidParam(c, err.Error())
 			return
 		}
 
@@ -121,13 +115,13 @@ func SignIn(c *gin.Context) {
 		// 1.根据邮箱获取哈希密码与盐值
 		userInfo := userModel.GetUserInfoByEmail(form.Email)
 		if userInfo == nil {
-			common.CommonResponse(c, common.ResponseCodeUnAuthorized, http.StatusForbidden, nil, errors.New("email Or password error,please try again"))
+			common.CommonResponse(c, common.ResponseCodeUnAuthorized, http.StatusForbidden, nil, "account not exist,please try again")
 			return
 		}
 		// 2.将用户密码与盐值哈希计算并与数据库密码进行比较
 		b := common.IsValidPasswd(form.PassWord, userInfo.Salt, userInfo.Password)
 		if !b {
-			common.CommonResponse(c, common.ResponseCodeUnAuthorized, http.StatusForbidden, nil, errors.New("email Or password error,please try again"))
+			common.CommonResponse(c, common.ResponseCodeUnAuthorized, http.StatusForbidden, nil, "email Or password error,please try again")
 			return
 		}
 
@@ -141,7 +135,7 @@ func SignIn(c *gin.Context) {
 
 		tkStr, err := jwt.JwtService.Encode(userClaim)
 		if !e.Eh(err) {
-			common.ResponseServerError(c, errors.New("jwt token string encode error"))
+			common.ResponseServerError(c, "jwt token string encode error")
 			return
 		}
 		// Redis存储token保存登录状态
@@ -159,7 +153,7 @@ func SignIn(c *gin.Context) {
 		return
 
 	} else {
-		common.ResponseMethodNotAllowed(c, errors.New("only allow GET Or POST method"))
+		common.ResponseMethodNotAllowed(c, "only allow GET Or POST method")
 		return
 	}
 }
@@ -170,12 +164,15 @@ func SignIn(c *gin.Context) {
 func SignOut(c *gin.Context) {
 	// 从header获取token字段，在redis删除键
 	tkStr := c.GetHeader("Authorization")
+	if tkStr == "" {
+		common.CommonResponse(c, common.ResponseCodeUnAuthorized, http.StatusUnauthorized, nil, "token  not exist")
+	}
 	// fmt.Println(tkStr)
 
 	// 解码获取id
 	claim, err := jwt.JwtService.Decode(tkStr)
 	if err != nil {
-		common.ResponseUnAuthorized(c, err)
+		common.ResponseUnAuthorized(c, err.Error())
 		return
 	}
 
@@ -185,6 +182,6 @@ func SignOut(c *gin.Context) {
 	if delCount > 0 {
 		common.ResponseOk(c, gin.H{"message": "Sign Out Successful!"})
 	} else {
-		common.ResponseServerError(c, errors.New("sign out error"))
+		common.ResponseServerError(c, "sign out error")
 	}
 }

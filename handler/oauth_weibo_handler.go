@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/gofuncchan/ginger/cache/tokenCache"
 	"github.com/gofuncchan/ginger/common"
@@ -56,7 +55,7 @@ func WeiboSignIn(c *gin.Context) {
 	// validate request params
 	form := new(WeiboSignInParams)
 	if err := c.ShouldBind(form); err != nil {
-		common.ResponseInvalidParam(c, err)
+		common.ResponseInvalidParam(c, err.Error())
 		return
 	}
 
@@ -66,7 +65,7 @@ func WeiboSignIn(c *gin.Context) {
 	// 已获取到三方平台用户信息，进入鉴权流程
 	info, err := userOauthModel.GetUserOauthInfo(userInfo.UserInfo.OpenId, userInfo.UserInfo.UnionId, userOauthModel.WeiboPlatform)
 	if err != nil {
-		common.ResponseServerError(c, errors.New("wechat oauth2 login error"))
+		common.ResponseServerError(c, "wechat oauth2 login error")
 		return
 	}
 	var userClaim jwt.TokenUserClaim
@@ -75,7 +74,7 @@ func WeiboSignIn(c *gin.Context) {
 		// 该三方账号已经注册过，走登录流程，获取用户信息，生成TokenString返回
 		userInfo := userOauthModel.GetUserInfoByUserOauthId(int64(info.ID))
 		if userInfo == nil {
-			common.ResponseServerError(c, errors.New("wechat oauth2 login error"))
+			common.ResponseServerError(c, "wechat oauth2 login error")
 			return
 		}
 
@@ -91,7 +90,7 @@ func WeiboSignIn(c *gin.Context) {
 		// 该三方账号未注册，走注册流程，新增用户信息，生成TokenString返回
 		userId := userOauthModel.CreateUserByOauth2UserInfo(info.NickName, info.AvatarURL, info.AccessToken, info.OpenID, info.UnionID, int64(info.Gender), userOauthModel.WeiboPlatform)
 		if userId < 0 {
-			common.ResponseServerError(c, errors.New("register user info error"))
+			common.ResponseServerError(c,"register user info error")
 			return
 		}
 
@@ -107,7 +106,7 @@ func WeiboSignIn(c *gin.Context) {
 
 	tkStr, err := jwt.JwtService.Encode(userClaim)
 	if !e.Eh(err) {
-		common.ResponseServerError(c, errors.New("jwt token string encode error"))
+		common.ResponseServerError(c, "jwt token string encode error")
 		return
 	}
 	// Redis存储token保存登录状态
