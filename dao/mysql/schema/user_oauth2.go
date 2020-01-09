@@ -4,7 +4,7 @@ import "time"
 
 /*
    This code is generated for gendry
-   ginger-cli schema -d ginger_db -t user_oauth2
+   ginger-gen schema -d ginger_db -t user_oauth2
 */
 
 const UserOauth2TableName = "user_oauth2"

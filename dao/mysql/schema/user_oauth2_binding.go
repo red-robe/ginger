@@ -2,7 +2,7 @@ package schema
 
 /*
    This code is generated for gendry
-   ginger-cli schema -d ginger_db -t user_oauth2_binding
+   ginger-gen schema -d ginger_db -t user_oauth2_binding
 */
 
 const UserOauth2BindingTableName = "user_oauth2_binding"
