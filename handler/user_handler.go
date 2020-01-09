@@ -115,13 +115,13 @@ func SignIn(c *gin.Context) {
 		// 1.根据邮箱获取哈希密码与盐值
 		userInfo := userModel.GetUserInfoByEmail(form.Email)
 		if userInfo == nil {
-			common.CommonResponse(c, common.ResponseCodeUnAuthorized, http.StatusForbidden, nil, "account not exist,please try again")
+			common.Response(c, common.ResponseCodeUnAuthorized, http.StatusForbidden, nil, "account not exist,please try again")
 			return
 		}
 		// 2.将用户密码与盐值哈希计算并与数据库密码进行比较
 		b := common.IsValidPasswd(form.PassWord, userInfo.Salt, userInfo.Password)
 		if !b {
-			common.CommonResponse(c, common.ResponseCodeUnAuthorized, http.StatusForbidden, nil, "email Or password error,please try again")
+			common.Response(c, common.ResponseCodeUnAuthorized, http.StatusForbidden, nil, "email Or password error,please try again")
 			return
 		}
 
@@ -165,7 +165,7 @@ func SignOut(c *gin.Context) {
 	// 从header获取token字段，在redis删除键
 	tkStr := c.GetHeader("Authorization")
 	if tkStr == "" {
-		common.CommonResponse(c, common.ResponseCodeUnAuthorized, http.StatusUnauthorized, nil, "token  not exist")
+		common.Response(c, common.ResponseCodeUnAuthorized, http.StatusUnauthorized, nil, "token  not exist")
 	}
 	// fmt.Println(tkStr)
 
