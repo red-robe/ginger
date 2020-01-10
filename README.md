@@ -17,6 +17,7 @@ Ginger 是一个构建gin应用的脚手架。
 - 整合基于robfig/cron/v3的定时任务
 - 整合redis pubsub 和nats 消息中间件
 - 整合微信、QQ、微博三方登录工具包
+- 整合七牛和阿里云oss对象存储接口
 - 提供通用的utils工具包
 - 使用ginger-gen客户端生成通用代码，轻松搭建gin应用
 
@@ -44,6 +45,8 @@ Ginger 是一个构建gin应用的脚手架。
     |_middleware 中间件目录
     |_model 业务数据模型目录，编写mysql相关的业务存储逻辑
     |_mq 实现消息中间件系统的client，这里整合了redis pubsub和nats，可根据业务随意使用，在配置文件mq.yaml配置必要项即可
+    |_oauth2 实现微信、QQ、微博的Oauth2鉴权
+    |_oss 整合七牛和阿里云oss对象存储接口
     |_repository 数据仓库目录，编写mongo存储相关的业务逻辑
     |_router 路由设置目录
     |_subscriber 整合了redis pubsub和nats的消息订阅器，可随系统启动一并运行，也可抽离出来独立运行
