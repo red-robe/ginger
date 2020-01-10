@@ -105,6 +105,44 @@ type Cors struct {
 	AllowMethods     []string `yaml:"AllowMethods"`
 }
 
+// OSS对象存储配置
+type Oss struct {
+	Qiniu  `yaml:"qiniu"`
+	Aliyun `yaml:"aliyun"`
+}
+
+type Qiniu struct {
+	Switch           bool   `yaml:"switch"`
+	AccessKey        string `yaml:"accessKey"`
+	SecretKey        string `yaml:"secretKey"`
+	Bucket           string `yaml:"bucket"`
+	UseHTTPS         bool   `yaml:"useHTTPS"`
+	UseCdnDomains    bool   `yaml:"UseCdnDomains"`
+	UpTokenExpires   int    `yaml:"upTokenExpires"`
+	CallbackURL      string `yaml:"callbackURL"`
+	CallbackBodyType string `yaml:"callbackBodyType"`
+	EndUser          string `yaml:"endUser"`
+	FsizeMin         int    `yaml:"fsizeMin"`
+	FsizeMax         int    `yaml:"fsizeLimit"`
+	MimeLimit        string `yaml:"mimeLimit"`
+}
+
+type Aliyun struct {
+	Switch          bool   `yaml:"switch"`
+	AccessKeySecret string `yaml:"accessKeySecret"`
+	ConnTimeout     int    `yaml:"connTimeout"`
+	RWTimeout       int    `yaml:"rwTimeout"`
+	EnableMD5       bool   `yaml:"enableMD5"`
+	EnableCRC       bool   `yaml:"enableCRC"`
+	AuthProxy       string `yaml:"authProxy"`
+	Proxy           string `yaml:"proxy"`
+	AccessKeyId     string `yaml:"accessKeyId"`
+	BucketName      string `yaml:"bucketName"`
+	Endpoint        string `yaml:"endpoint"`
+	UseCname        bool   `yaml:"useCname"`
+	SecurityToken   string `yaml:"securityToken"`
+}
+
 var (
 	BaseConf  *Base
 	LogConf   *Log
@@ -113,6 +151,7 @@ var (
 	MongoConf *Mongodb
 	MqConf    *Mq
 	CorsConf  *Cors
+	OssConf   *Oss
 )
 
 // 动态参数配置项，编译后可携yaml配置文件启动
@@ -151,6 +190,11 @@ func Init(confPath string) {
 	CorsConfFile, err := ioutil.ReadFile(confPath + "/cors.yaml")
 	common.EF(err)
 	err = yaml.Unmarshal(CorsConfFile, &CorsConf)
+	common.EF(err)
+
+	OssConfFile, err := ioutil.ReadFile(confPath + "/oss.yaml")
+	common.EF(err)
+	err = yaml.Unmarshal(OssConfFile, &OssConf)
 	common.EF(err)
 
 }

@@ -35,7 +35,7 @@ func Em(err error) bool {
 // 通用的错误处理日志记录
 func Ec(err error) bool {
 	if err != nil {
-		var path = "undefine"
+		var path = "common"
 		if _, file, line, ok := runtime.Caller(1); ok {
 			path = file + "" + strconv.Itoa(line)
 		}

@@ -3,6 +3,8 @@ module github.com/gofuncchan/ginger
 go 1.12
 
 require (
+	github.com/aliyun/aliyun-oss-go-sdk v2.0.5+incompatible
+	github.com/baiyubin/aliyun-sts-go-sdk v0.0.0-20180326062324-cfa1a18b161f // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/didi/gendry v1.3.1
 	github.com/fastly/go-utils v0.0.0-20180712184237-d95a45783239 // indirect
@@ -19,9 +21,13 @@ require (
 	github.com/mitchellh/mapstructure v1.1.2
 	github.com/nats-io/nats-server/v2 v2.1.2 // indirect
 	github.com/nats-io/nats.go v1.9.1
+	github.com/qiniu/api.v7/v7 v7.4.1
 	github.com/robfig/cron/v3 v3.0.0
+	github.com/satori/go.uuid v1.2.0 // indirect
 	github.com/tebeka/strftime v0.1.3 // indirect
 	go.uber.org/zap v1.10.0
+	golang.org/x/net v0.0.0-20190620200207-3b0461eec859
+	golang.org/x/time v0.0.0-00010101000000-000000000000 // indirect
 	google.golang.org/appengine v0.0.0-00010101000000-000000000000 // indirect
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
 	gopkg.in/yaml.v2 v2.2.2

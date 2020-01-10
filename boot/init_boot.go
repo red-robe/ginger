@@ -11,6 +11,7 @@ import (
 	"github.com/gofuncchan/ginger/logger"
 	"github.com/gofuncchan/ginger/mq"
 	"github.com/gofuncchan/ginger/oauth2"
+	"github.com/gofuncchan/ginger/oss"
 	"github.com/gofuncchan/ginger/util/jwt"
 	"io/ioutil"
 	"os"
@@ -43,6 +44,9 @@ func Init() {
 	mysql.Init()
 	// 初始化Redis连接池
 	redis.Init()
+
+	// 对象存储连接初始化
+	oss.Init()
 
 }
 
