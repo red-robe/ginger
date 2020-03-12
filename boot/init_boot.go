@@ -21,22 +21,13 @@ import (
 func Init() {
 	// 从启动参数获取配置文件路径
 	confPath := getConfigPath()
-
 	// 初始化配置参数
 	config.Init(confPath)
 
-	// 初始化zap日志
-	logger.Init()
-
 	// 初始化三方登录管理器
 	oauth2.InitOAuth2Manager()
-
-	// 消息中间件初始化
-	mq.Init()
-
 	// jwt初始化
 	jwt.JwtInit()
-
 	// 如开启mongo记录日志，则mongo连接必须初始化
 	// 初始化mongodb连接池
 	mongodb.Init()
@@ -44,10 +35,6 @@ func Init() {
 	mysql.Init()
 	// 初始化Redis连接池
 	redis.Init()
-
-	// 对象存储连接初始化
-	oss.Init()
-
 }
 
 func getConfigPath() string {
