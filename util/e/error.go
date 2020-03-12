@@ -1,7 +1,7 @@
 package e
 
 import (
-	"github.com/gofuncchan/ginger/util/logger"
+	"github.com/gofuncchan/ginger/logger"
 	"runtime"
 	"strconv"
 )

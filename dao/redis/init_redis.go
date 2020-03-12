@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/garyburd/redigo/redis"
 	"github.com/gofuncchan/ginger/config"
-	"github.com/gofuncchan/ginger/util/logger"
+	"github.com/gofuncchan/ginger/logger"
 	"strconv"
 	"time"
 )
@@ -64,4 +64,8 @@ func Init() {
 func GetRedisConn() redis.Conn {
 	conn := poolPtr.Get()
 	return conn
+}
+
+func CloseRedisPool()  {
+	poolPtr.Close()
 }

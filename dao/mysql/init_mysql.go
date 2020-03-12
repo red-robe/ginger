@@ -38,3 +38,7 @@ func Init() {
 		fmt.Println("Mysql pool init ready!")
 	}
 }
+
+func CloseDB()  {
+	Db.Close()
+}

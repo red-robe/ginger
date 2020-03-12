@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/gofuncchan/ginger/config"
 	"github.com/gofuncchan/ginger/logger"
-	"go.uber.org/zap"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -66,11 +65,7 @@ func (tks *TokenService) Decode(tokenString string) (*CustomerClaim, error) {
 	})
 
 	if err != nil {
-		logger.ZapLogger.Error("JWT Decode Wrong",
-			zap.String("path", "util/jwt.TokenService.Decode"),
-			zap.String("warming", err.Error()),
-			zap.String("receive_token", tokenString),
-		)
+		logger.ErrorLog("EC", "common", err)
 		return nil, err
 	}
 

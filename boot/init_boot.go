@@ -9,9 +9,11 @@ import (
 	"github.com/gofuncchan/ginger/dao/mysql"
 	"github.com/gofuncchan/ginger/dao/redis"
 	"github.com/gofuncchan/ginger/logger"
-	"github.com/gofuncchan/ginger/mq"
+	"io"
+
+	// "github.com/gofuncchan/ginger/mq"
 	"github.com/gofuncchan/ginger/oauth2"
-	"github.com/gofuncchan/ginger/oss"
+	// "github.com/gofuncchan/ginger/oss"
 	"github.com/gofuncchan/ginger/util/jwt"
 	"io/ioutil"
 	"os"
@@ -23,6 +25,10 @@ func Init() {
 	confPath := getConfigPath()
 	// 初始化配置参数
 	config.Init(confPath)
+
+	// 简单记录日志到文件和std
+	f, _ := os.Create("./log/runtime.log")
+	logger.Init(io.MultiWriter(f, os.Stdout))
 
 	// 初始化三方登录管理器
 	oauth2.InitOAuth2Manager()

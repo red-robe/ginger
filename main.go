@@ -5,6 +5,9 @@ import (
 	"github.com/gofuncchan/ginger/boot"
 	"github.com/gofuncchan/ginger/common"
 	"github.com/gofuncchan/ginger/config"
+	"io"
+	"os"
+
 	// "github.com/gofuncchan/ginger/cron"
 	// "github.com/gofuncchan/ginger/logger"
 	"github.com/gofuncchan/ginger/middleware/cors"
@@ -19,7 +22,7 @@ import (
 func main() {
 	// 系统模块初始化
 	boot.Init()
-
+	defer boot.CloseDao()
 	var err error
 
 	// // redis subscriber 运行
@@ -42,6 +45,10 @@ func main() {
 	// defer logger.ZapLogger.Sync() // 退出前刷新所有缓冲的日志
 	// engine.Use(ginger_zap_logger.GingerWithZap(logger.ZapLogger))
 	// engine.Use(ginger_zap_recovery.GingerRecoveryWithZap(logger.ZapLogger, true))
+
+	// 简单记录日志到文件和std
+	f, _ := os.Create("./log/ginger.log")
+	gin.DefaultWriter = io.MultiWriter(f, os.Stdout)
 
 	engine.Use(cors.CORSMiddleware())
 

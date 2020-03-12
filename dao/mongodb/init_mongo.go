@@ -66,3 +66,7 @@ func Session() *mgo.Session {
 	}
 	return session.Clone()
 }
+
+func CloseSession()  {
+	session.Close()
+}
